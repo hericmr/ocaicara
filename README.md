@@ -10,7 +10,9 @@ Explore o charme de Santos e ajude o personagem Chorão a fazer seu corre. Encon
 
 ## Gameplay:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/iNLuEgj2kLI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+Assista ao vídeo da gameplay:
+
+[![Gameplay](https://img.youtube.com/vi/iNLuEgj2kLI/0.jpg)](https://www.youtube.com/watch?v=iNLuEgj2kLI)
 
 ## Requisitos
 
