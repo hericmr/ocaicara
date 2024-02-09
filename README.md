@@ -1,5 +1,4 @@
 # O Caiçara - Bairros de Santos
-Assista ao vídeo da gameplay:
 ![O Caiçara](https://github.com/hericmr/ocaicara/blob/main/screenplay.png?raw=true)
 
 ![Assista ao vídeo da gameplay](https://www.youtube.com/watch?v=iNLuEgj2kLI)
