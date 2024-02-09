@@ -1,6 +1,8 @@
 # O Caiçara - Bairros de Santos
 Assista ao vídeo da gameplay:
-![O Caiçara](https://github.com/hericmr/ocaicara/blob/main/screenplay.png?raw=true)(https://www.youtube.com/watch?v=iNLuEgj2kLI)
+![O Caiçara](https://github.com/hericmr/ocaicara/blob/main/screenplay.png?raw=true)
+
+![Assista ao vídeo da gameplay](https://www.youtube.com/watch?v=iNLuEgj2kLI)
 
 
 Este é um jogo desenvolvido em Python usando Pygame, onde o objetivo é encontrar biqueiras e bairros na cidade de Santos, São Paulo.
