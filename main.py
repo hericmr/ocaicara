@@ -1,4 +1,3 @@
-import asyncio
 import pygame
 import sys
 import random
@@ -11,7 +10,7 @@ def desenhar_texto(tela, texto, posicao):
     
 def desenhar_contador(tela, texto, posicao):
     fonte = pygame.font.Font('freesansbold.ttf', 36)
-    superficie_texto = fonte.render(texto, 1, (255, 255, 0))  # Cor amarela
+    superficie_texto = fonte.render(texto, 1, (255, 255, 0))  # amarela
     tela.blit(superficie_texto, posicao)
     pygame.display.flip()
 
@@ -45,7 +44,10 @@ chorao = pygame.image.load('chorao.png')
 
 def inicializar_jogo():
     pygame.init()
-    pygame.display.set_caption("O Caiçara - AJUDE O CHORÃO A ENCONTRAR OS BAIRROS DE SANTOS")
+    pygame.mixer.init()  
+    pygame.mixer.music.load('musica.ogg')  
+    pygame.mixer.music.play(-1)  
+    pygame.display.set_caption("O CAIÇARA")
     largura_tela = 1319
     altura_tela = 519
     tela = pygame.display.set_mode((largura_tela, altura_tela))
@@ -62,17 +64,6 @@ def game_over(tela):
     pygame.display.flip()
     pygame.time.wait(2000)
 
-
-def inicializar_jogo():
-    pygame.init()
-    pygame.mixer.init()  
-    pygame.mixer.music.load('musica.ogg')  
-    pygame.mixer.music.play(-1)  
-    pygame.display.set_caption("O CAIÇARA")
-    largura_tela = 1319
-    altura_tela = 519
-    tela = pygame.display.set_mode((largura_tela, altura_tela))
-    return tela
 
 def introducao(tela, mapa, texto_titulo):
     for i in range(550):
@@ -97,7 +88,7 @@ def introducao(tela, mapa, texto_titulo):
         pygame.time.wait(5)
 
 
-async def loop_jogo_principal(tela, mapa):
+def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
     tela.blit(mapa, (0, 0))
     relogio = pygame.time.Clock()
@@ -166,11 +157,10 @@ async def loop_jogo_principal(tela, mapa):
 
 
 
-async def main():
+def main():
     mapa = carregar_mapa()
     tela = inicializar_jogo()
-    await loop_jogo_principal(tela, mapa)
+    loop_jogo_principal(tela, mapa)
 
 if __name__ == "__main__":
-    # Run the asyncio event loop
-    asyncio.run(main())
+    main()
