@@ -3,7 +3,7 @@
 
 [Assista ao vídeo da gameplay](https://www.youtube.com/watch?v=iNLuEgj2kLI)
 
-Este é um jogo desenvolvido em Python,e Pygame onde o objetivo é encontrar biqueiras e bairros na cidade de Santos, São Paulo.
+Este é um jogo desenvolvido em Python e Pygame onde o objetivo é encontrar biqueiras e bairros na cidade de Santos, São Paulo.
 
 ## Visão Geral
 
