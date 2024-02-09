@@ -146,8 +146,9 @@ async def loop_jogo_principal(tela, mapa):
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
                                 pygame.display.flip()
                                 pygame.time.wait(1000)
-                        tela.blit(mapa, (0, 0))
-                        pygame.display.flip()
+                                tela.blit(mapa, (0, 0))
+                                pygame.display.flip()
+                                break
 
         if bairro_clicado != bairro_aleatorio:
             contador -= 1
