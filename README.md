@@ -44,19 +44,12 @@ python main.py
 
 5. **Divirta-se jogando!**
 
-## Funcionalidades
-
-- Desafie suas habilidades de localização e malandragem encontrando bairros e biqueiras no mapa de Santos.
-- Interface interativa e amigável.
-- Música de fundo para criar uma atmosfera imersiva.
-
 ## Contribuições
 
-Contribuições são bem-vindas! Se você encontrar algum problema ou quiser melhorar este jogo, sinta-se à vontade para abrir uma issue ou enviar uma pull request.
+Contribuições são bem-vindas! 
+Se você encontrar algum problema ou quiser melhorar este jogo, sinta-se à vontade para abrir uma issue ou enviar uma pull request.
 
 ## Autor
 
 Este jogo foi desenvolvido por [Héric Moura](https://github.com/hericmr).
-
-## Licença
 
