@@ -6,7 +6,7 @@ Este é um jogo desenvolvido em Python usando Pygame, onde o objetivo é encontr
 
 ## Visão Geral
 
-O Caiçara é um jogo interativo inspirado na vida em Santos, São Paulo. Mostre  seu verdadeiro  espirito santista ajudando o personagem Chorão a encontrar diferentes "biqueiras" da cidade e localizar bairros no mapa, testando sua malandragem e conhecimento geográfico.
+Explore o charme de Santos e ajude o personagem Chorão a fazer seu corre. Encontre as biqueiras e os diferentes bairros da cidade, testando não apenas sua malandragem, mas também seu conhecimento geográfico. Prepare-se para uma aventura emocionante, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
 
 ## Requisitos
 
