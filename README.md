@@ -8,8 +8,7 @@ Este é um jogo desenvolvido em Python usando Pygame, onde o objetivo é encontr
 
 ## Visão Geral
 
-Explore o charme de Santos e ajude o personagem Chorão a fazer seu corre. Encontre as biqueiras e os diferentes bairros da cidade, testando não apenas sua malandragem, mas também seu conhecimento geográfico. Prepare-se para uma aventura emocionante, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
-
+Explore o charme de Santos e ajude o nosso Marginal Alado a fazer seu corre. Encontre as biqueiras e os diferentes bairros da cidade, testando não apenas sua malandragem, mas também seu conhecimento geográfico. Prepare-se para uma aventura emocionante, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
 
 ## Requisitos
 
