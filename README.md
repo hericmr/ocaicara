@@ -46,7 +46,7 @@ python main.py
 
 ## Funcionalidades
 
-- Desafie suas habilidades de localização encontrando diferentes bairros no mapa de Santos.
+- Desafie suas habilidades de localização e malandragem encontrando bairros e biqueiras no mapa de Santos.
 - Interface interativa e amigável.
 - Música de fundo para criar uma atmosfera imersiva.
 
