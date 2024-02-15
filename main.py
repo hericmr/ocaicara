@@ -11,7 +11,7 @@ def desenhar_texto(tela, texto, posicao):
     
 def desenhar_contador(tela, texto, posicao):
     fonte = pygame.font.Font('freesansbold.ttf', 36)
-    superficie_texto = fonte.render(texto, 1, (255, 255, 0))  # Cor amarela
+    superficie_texto = fonte.render(texto, 5, (255, 255, 0))  # Cor amarela
     tela.blit(superficie_texto, posicao)
     pygame.display.flip()
 
@@ -44,6 +44,7 @@ bairros = {
 }
 
 def calcular_ponto_central(posicoes):
+    # Calcular a média das coordenadas x e y de todas as posições
     soma_x = sum(pos[0] for pos in posicoes)
     soma_y = sum(pos[1] for pos in posicoes)
     media_x = soma_x / len(posicoes)
@@ -101,7 +102,6 @@ def inicializar_jogo():
 
 def introducao(tela, mapa, texto_titulo):
     for i in range(550):
-        # Verifica se o usuário pressionou a tecla ENTER para pular a introdução
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
                 return
@@ -111,13 +111,15 @@ def introducao(tela, mapa, texto_titulo):
         posicao_personagem = (100 + i * 2, 50 + i * 0.6)
         personagem_redimensionado = pygame.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
         tela.blit(personagem_redimensionado, posicao_personagem)
+
+
         fonte_titulo = pygame.font.SysFont('freesansbold.ttf', 100)
         texto_titulo = fonte_titulo.render('O Caiçara', True, (255, 255, 255))
         posicao_titulo = ((tela.get_width() - texto_titulo.get_width()) // 2, 50)
         tela.blit(texto_titulo, posicao_titulo)
 
         fonte_aperte_enter = pygame.font.SysFont('freesansbold.ttf', 36)
-        texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade!', True, (255, 255, 255))
+        texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade! Aperte Enter para pular a intro.', True, (255, 255, 255))
         posicao_aperte_enter = ((tela.get_width() - texto_aperte_enter.get_width()) // 2, tela.get_height() - 50)
         tela.blit(texto_aperte_enter, posicao_aperte_enter)
         pygame.time.wait(4)
@@ -129,7 +131,7 @@ def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
     tela.blit(mapa, (0, 0))
     relogio = pygame.time.Clock()
-    contador = 10
+    contador = 60
     fonte_titulo = pygame.font.SysFont(None, 120)
     texto_titulo = fonte_titulo.render("O CAIÇARA", True, (255, 255, 255)) 
 
@@ -138,7 +140,6 @@ def loop_jogo_principal(tela, mapa):
     pygame.display.flip()
     pygame.time.wait(2000) 
 
-
     while True:
         tela.blit(chorao, (10, 50))
         relogio.tick(120)
@@ -146,7 +147,7 @@ def loop_jogo_principal(tela, mapa):
         bairro_aleatorio = random.choice(lista_bairros)
         encontre = f'Encontre o bairro... {bairro_aleatorio}!'
         desenhar_texto(tela, encontre, (10, 40))
-        desenhar_contador(tela, f"vidas: {contador}", (1100, 10))
+        desenhar_contador(tela, f"Pontos: {contador}", (1000, 10))
 
         bairro_clicado = None
         while bairro_clicado is None:
@@ -176,21 +177,32 @@ def loop_jogo_principal(tela, mapa):
                                 pygame.time.wait(1000)
                                 tela.blit(mapa, (0, 0))
                                 pygame.display.flip()
+                                contador += 50
                                 break
 
         if bairro_clicado != bairro_aleatorio:
-            contador -= 1
-            texto = f'Ops! Você clicou no bairro {bairro_clicado}, mas o bairro correto era {bairro_aleatorio}.'
+            # Cálculo do comprimento da seta
+            ponto_central_aleatorio = pontos_centrais[bairro_aleatorio]
+            comprimento_seta = math.sqrt((ponto_central_aleatorio[0] - posicao_mouse[0]) ** 2 +
+                                         (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2)
+
+            # Exibir o comprimento da seta para o jogador
+            texto_comprimento_seta = f"Perdeu {comprimento_seta:.2f} pontos."
+            desenhar_texto(tela, texto_comprimento_seta, (10, 100))
+
+            # Ajuste do número de vidas perdidas com base no comprimento da seta
+            contador -= int(comprimento_seta / 10)
+
+            texto = f'Você clicou no bairro {bairro_clicado}, mas o bairro correto era {bairro_aleatorio}.'
             desenhar_texto(tela, texto, (0, 10))
-            ponto_central_aleatorio = calcular_ponto_central(bairros[bairro_aleatorio]['posicao'])
+            desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
             desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
             pygame.display.flip()
             pygame.time.wait(3000)
             tela.blit(mapa, (0, 0))
             pygame.display.flip()
                       
-
-        if contador == 0:
+        if contador <= 0:
             game_over(tela)
             pygame.quit()
             sys.exit()
@@ -202,3 +214,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
