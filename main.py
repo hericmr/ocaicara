@@ -44,7 +44,6 @@ bairros = {
 }
 
 def calcular_ponto_central(posicoes):
-    # Calcular a média das coordenadas x e y de todas as posições
     soma_x = sum(pos[0] for pos in posicoes)
     soma_y = sum(pos[1] for pos in posicoes)
     media_x = soma_x / len(posicoes)
@@ -112,8 +111,6 @@ def introducao(tela, mapa, texto_titulo):
         posicao_personagem = (100 + i * 2, 50 + i * 0.6)
         personagem_redimensionado = pygame.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
         tela.blit(personagem_redimensionado, posicao_personagem)
-
-        # Desenha o texto do título
         fonte_titulo = pygame.font.SysFont('freesansbold.ttf', 100)
         texto_titulo = fonte_titulo.render('O Caiçara', True, (255, 255, 255))
         posicao_titulo = ((tela.get_width() - texto_titulo.get_width()) // 2, 50)
