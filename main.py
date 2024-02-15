@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 def desenhar_texto(tela, texto, posicao):
     fonte = pygame.font.SysFont('freesansbold.ttf', 50)
@@ -10,7 +11,7 @@ def desenhar_texto(tela, texto, posicao):
     
 def desenhar_contador(tela, texto, posicao):
     fonte = pygame.font.Font('freesansbold.ttf', 36)
-    superficie_texto = fonte.render(texto, 1, (255, 255, 0))  # amarela
+    superficie_texto = fonte.render(texto, 1, (255, 255, 0))  # Cor amarela
     tela.blit(superficie_texto, posicao)
     pygame.display.flip()
 
@@ -37,17 +38,40 @@ bairros = {
     'Porto Macuco' : {'posicao' : [(1019.17, 379.70), (1028.82, 374.87), (944.82, 258.03), (943.85, 263.83), (936.13, 263.83), (937.09, 287.97), (953.51, 289.90)]},
     'Encruzilhada' : {'posicao' : [(863.71, 269.62), (868.53, 224.24), (811.56, 216.51), (803.84, 277.35), (829.91, 266.72)]},
     'Vila Mathias' : {'posicao' : [(769.65, 208.52), (882.74, 222.16), (887.61, 174.39), (873.97, 173.42), (855.44, 181.22), (835.94, 177.32), (837.89, 165.62), (823.27, 169.52), (820.35, 166.60), (816.45, 167.57), (813.52, 166.60), (809.62, 168.55), (807.67, 168.55), (803.77, 169.52), (799.87, 166.60), (795.00, 166.60), (789.15, 168.55), (785.25, 183.17), (780.38, 199.74)]},
-    'Vila Nova' : {'posicao' : [(845.36, 179.82), (849.22, 141.20), (898.47, 154.72), (896.54, 159.54), (896.54, 163.41), (897.50, 166.30), (895.57, 175.96), (882.05, 174.99), (863.71, 180.79)]}
+    'Vila Nova' : {'posicao' : [(845.36, 179.82), (849.22, 141.20), (898.47, 154.72), (896.54, 159.54), (896.54, 163.41), (897.50, 166.30), (895.57, 175.96), (882.05, 174.99), (863.71, 180.79)]},
+    'Paquetá' : {'posicao' : [(865.64, 146.03), (869.50, 114.16), (907.16, 126.71), (906.19, 145.06), (899.43, 153.75)]},
+    'Marapé' : {'posicao' : [(733.35, 307.28), (685.07, 322.73), (703.42, 304.38), (705.35, 284.11), (689.90, 254.17), (690.86, 245.48), (743.97, 214.58), (743.97, 208.79), (775.84, 212.65), (741.08, 236.79)]},
 }
+
+def calcular_ponto_central(posicoes):
+    # Calcular a média das coordenadas x e y de todas as posições
+    soma_x = sum(pos[0] for pos in posicoes)
+    soma_y = sum(pos[1] for pos in posicoes)
+    media_x = soma_x / len(posicoes)
+    media_y = soma_y / len(posicoes)
+    return (media_x, media_y)
+pontos_centrais = {}
+for bairro, dados in bairros.items():
+    posicoes = dados['posicao']
+    ponto_central = calcular_ponto_central(posicoes)
+    pontos_centrais[bairro] = ponto_central
+
+def desenhar_seta(tela, posicao_inicial, posicao_final):
+    angulo = math.atan2(posicao_final[1] - posicao_inicial[1], posicao_final[0] - posicao_inicial[0])
+    comprimento = 10
+    pygame.draw.line(tela, (255, 0, 0), posicao_inicial, posicao_final, 3)
+    ponta1 = (posicao_final[0] - comprimento * math.cos(angulo - math.pi / 6),
+              posicao_final[1] - comprimento * math.sin(angulo - math.pi / 6))
+    ponta2 = (posicao_final[0] - comprimento * math.cos(angulo + math.pi / 6),
+              posicao_final[1] - comprimento * math.sin(angulo + math.pi / 6))
+    pygame.draw.line(tela, (255, 0, 0), posicao_final, ponta1, 3)
+    pygame.draw.line(tela, (255, 0, 0), posicao_final, ponta2, 3)
 
 chorao = pygame.image.load('chorao.png')
 
 def inicializar_jogo():
     pygame.init()
-    pygame.mixer.init()  
-    pygame.mixer.music.load('musica.ogg')  
-    pygame.mixer.music.play(-1)  
-    pygame.display.set_caption("O CAIÇARA")
+    pygame.display.set_caption("O Caiçara - AJUDE O CHORÃO A ENCONTRAR OS BAIRROS DE SANTOS")
     largura_tela = 1319
     altura_tela = 519
     tela = pygame.display.set_mode((largura_tela, altura_tela))
@@ -65,9 +89,20 @@ def game_over(tela):
     pygame.time.wait(2000)
 
 
+def inicializar_jogo():
+    pygame.init()
+    pygame.mixer.init()  
+    pygame.mixer.music.load('musica.ogg')  
+    pygame.mixer.music.play(-1)  
+    pygame.display.set_caption("O CAIÇARA")
+    largura_tela = 1319
+    altura_tela = 519
+    tela = pygame.display.set_mode((largura_tela, altura_tela))
+    return tela
+
 def introducao(tela, mapa, texto_titulo):
     for i in range(550):
-        # preciso criar a menssagem na tela de aperte enter para pular a introducao
+        # Verifica se o usuário pressionou a tecla ENTER para pular a introdução
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
                 return
@@ -78,15 +113,20 @@ def introducao(tela, mapa, texto_titulo):
         personagem_redimensionado = pygame.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
         tela.blit(personagem_redimensionado, posicao_personagem)
 
-        # Posição do título
+        # Desenha o texto do título
         fonte_titulo = pygame.font.SysFont('freesansbold.ttf', 100)
         texto_titulo = fonte_titulo.render('O Caiçara', True, (255, 255, 255))
         posicao_titulo = ((tela.get_width() - texto_titulo.get_width()) // 2, 50)
         tela.blit(texto_titulo, posicao_titulo)
 
+        fonte_aperte_enter = pygame.font.SysFont('freesansbold.ttf', 36)
+        texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade!', True, (255, 255, 255))
+        posicao_aperte_enter = ((tela.get_width() - texto_aperte_enter.get_width()) // 2, tela.get_height() - 50)
+        tela.blit(texto_aperte_enter, posicao_aperte_enter)
+        pygame.time.wait(4)
         pygame.display.flip()
-        pygame.time.wait(5)
-
+        
+        tela.blit(mapa, (0, 0))
 
 def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
@@ -145,17 +185,18 @@ def loop_jogo_principal(tela, mapa):
             contador -= 1
             texto = f'Ops! Você clicou no bairro {bairro_clicado}, mas o bairro correto era {bairro_aleatorio}.'
             desenhar_texto(tela, texto, (0, 10))
+            ponto_central_aleatorio = calcular_ponto_central(bairros[bairro_aleatorio]['posicao'])
+            desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
             pygame.display.flip()
             pygame.time.wait(3000)
-        tela.blit(mapa, (0, 0))
-        pygame.display.flip()
+            tela.blit(mapa, (0, 0))
+            pygame.display.flip()
+                      
 
         if contador == 0:
             game_over(tela)
             pygame.quit()
             sys.exit()
-
-
 
 def main():
     mapa = carregar_mapa()
