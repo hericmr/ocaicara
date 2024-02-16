@@ -216,11 +216,10 @@ def loop_jogo_principal(tela, mapa):
             pygame.display.flip()
                       
         if contador <= 0:
-            if not game_over(tela):  # Se o jogador não quiser jogar novamente
+            if not game_over(tela):  
                 pygame.quit()
                 sys.exit()
             else:
-                # Reiniciar o jogo
                 contador = 50
                 pygame.display.flip()
                 pygame.time.wait(2000)
