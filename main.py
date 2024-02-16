@@ -197,14 +197,13 @@ def loop_jogo_principal(tela, mapa):
                                 break
 
         if bairro_clicado != bairro_aleatorio:
-            # Cálculo do comprimento da seta
             ponto_central_aleatorio = pontos_centrais[bairro_aleatorio]
             comprimento_seta = math.sqrt((ponto_central_aleatorio[0] - posicao_mouse[0]) ** 2 +
                                          (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2)
 
             texto_comprimento_seta = f"Perdeu {comprimento_seta:.2f} pontos."
             desenhar_texto(tela, texto_comprimento_seta, (10, 100))
-            contador -= int(comprimento_seta / 10)
+            contador -= int(comprimento_seta / 4)
 
             texto = f'Você clicou no bairro {bairro_clicado}, mas o bairro correto era {bairro_aleatorio}.'
             desenhar_texto(tela, texto, (400, 90))
