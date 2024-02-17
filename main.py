@@ -1,25 +1,32 @@
 import random
 import math
-import pygame
+import pygame as pg
 import sys
 
 def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
-    fonte = pygame.font.SysFont('freesansbold.ttf', 50)
+    fonte = pg.font.SysFont('freesansbold.ttf', 50)
     superficie_texto = fonte.render(texto, True, cor) 
     tela.blit(superficie_texto, posicao)
-    pygame.display.flip()
+    pg.display.flip()
+    
+def desenhar_caixa_texto(tela, texto):
+    cor_fundo = (0, 64, 0)
+    cor_borda = (0, 0, 0)
+    retangulo = pg.Rect(0, tela.get_height() - 190, tela.get_width(), 190)
+    pg.draw.rect(tela, cor_fundo, retangulo)
+    pg.draw.rect(tela, cor_borda, retangulo, 3)
     
 def desenhar_contador(tela, texto, posicao):
-    fonte = pygame.font.Font('freesansbold.ttf', 36)
-    superficie_texto = fonte.render(texto, 5, (255, 255, 0)) 
+    fonte = pg.font.Font('freesansbold.ttf', 36)
+    superficie_texto = fonte.render(texto, 5, (0, 0, 0)) 
     tela.blit(superficie_texto, posicao)
     
 
 def desenhar_bairro(tela, posicao, pontos):
-    poligono_bairro = pygame.Surface((max(pontos, key=lambda x: x[0])[0] - min(pontos, key=lambda x: x[0])[0],
+    poligono_bairro = pg.Surface((max(pontos, key=lambda x: x[0])[0] - min(pontos, key=lambda x: x[0])[0],
                                       max(pontos, key=lambda x: x[1])[1] - min(pontos, key=lambda x: x[1])[1]), 
-                                      pygame.SRCALPHA)
-    pygame.draw.polygon(poligono_bairro, (0, 255, 0), [(pos[0] - min(pontos, key=lambda x: x[0])[0],
+                                      pg.SRCALPHA)
+    pg.draw.polygon(poligono_bairro, (0, 255, 0), [(pos[0] - min(pontos, key=lambda x: x[0])[0],
                                                         pos[1] - min(pontos, key=lambda x: x[1])[1]) for pos in pontos])
     tela.blit(poligono_bairro, (min(pontos, key=lambda x: x[0])[0], min(pontos, key=lambda x: x[1])[1]))
 
@@ -63,108 +70,99 @@ for bairro, dados in bairros.items():
 def desenhar_seta(tela, posicao_inicial, posicao_final):
     angulo = math.atan2(posicao_final[1] - posicao_inicial[1], posicao_final[0] - posicao_inicial[0])
     comprimento = 10
-    pygame.draw.line(tela, (255, 0, 0), posicao_inicial, posicao_final, 3)
+    pg.draw.line(tela, (255, 0, 0), posicao_inicial, posicao_final, 3)
     ponta1 = (posicao_final[0] - comprimento * math.cos(angulo - math.pi / 6),
               posicao_final[1] - comprimento * math.sin(angulo - math.pi / 6))
     ponta2 = (posicao_final[0] - comprimento * math.cos(angulo + math.pi / 6),
               posicao_final[1] - comprimento * math.sin(angulo + math.pi / 6))
-    pygame.draw.line(tela, (255, 0, 0), posicao_final, ponta1, 3)
-    pygame.draw.line(tela, (255, 0, 0), posicao_final, ponta2, 3)
+    pg.draw.line(tela, (255, 0, 0), posicao_final, ponta1, 3)
+    pg.draw.line(tela, (255, 0, 0), posicao_final, ponta2, 3)
 
-chorao = pygame.image.load('chorao.png')
-
-def inicializar_jogo():
-    pygame.init()
-    pygame.display.set_caption("O Caiçara - AJUDE O CHORÃO A ENCONTRAR OS BAIRROS DE SANTOS")
-    pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-    largura_tela = 1319
-    altura_tela = 519
-    tela = pygame.display.set_mode((largura_tela, altura_tela))
-    return tela
+chorao = pg.image.load('chorao.png')
 
 def carregar_mapa():
-    mapa = pygame.image.load("map.png")
+    mapa = pg.image.load("map.png")
     return mapa
 
 def game_over(tela):
-    fonte = pygame.font.SysFont('freesansbold.ttf', 250)
+    fonte = pg.font.SysFont('freesansbold.ttf', 250)
     texto = fonte.render('Perdeu mané', True, (255, 0, 0))
     tela.blit(texto, (tela.get_width() // 2 - texto.get_width() // 2, tela.get_height() // 2 - texto.get_height() // 2))
-    pygame.display.flip()
-    pygame.time.wait(2000)
+    pg.display.flip()
+    pg.time.wait(2000)
 
-    fonte_aperte_s = pygame.font.SysFont('freesansbold.ttf', 36)
+    fonte_aperte_s = pg.font.SysFont('freesansbold.ttf', 36)
     texto_aperte_s = fonte_aperte_s.render('Quer jogar de novo? S/N', True, (255, 255, 255))
     posicao_aperte_s = ((tela.get_width() - texto_aperte_s.get_width()) // 2, tela.get_height() - 50)
     tela.blit(texto_aperte_s, posicao_aperte_s)
-    pygame.display.flip()
+    pg.display.flip()
 
     while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_s:
+        for evento in pg.event.get():
+            if evento.type == pg.KEYDOWN:
+                if evento.key == pg.K_s:
                     return True  
-                elif evento.key == pygame.K_n:
+                elif evento.key == pg.K_n:
                     return False 
  
 def inicializar_jogo():
-    pygame.init()
-    pygame.mixer.init()  
-    pygame.mixer.music.load('musica.ogg')  
-    pygame.mixer.music.play(-1)  
-    pygame.display.set_caption("O CAIÇARA")
+    pg.init()
+    pg.mixer.init()  
+    pg.mixer.music.load('musica.ogg')  
+    pg.mixer.music.play(-1)  
+    pg.display.set_caption("O CAIÇARA")
     largura_tela = 1319
-    altura_tela = 519
-    tela = pygame.display.set_mode((largura_tela, altura_tela))
+    altura_tela = 680
+    tela = pg.display.set_mode((largura_tela, altura_tela))
     return tela
 
 def introducao(tela, mapa, texto_titulo):
     for i in range(500):
-        for evento in pygame.event.get():
-            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_RETURN:
+        for evento in pg.event.get():
+            if evento.type == pg.KEYDOWN and evento.key == pg.K_RETURN:
                 return
         
         tela.blit(mapa, (0, 0))
         tamanho_personagem = int(i / 1)
         posicao_personagem = (100 + i * 2, 50 + i * 0.6)
-        personagem_redimensionado = pygame.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
+        personagem_redimensionado = pg.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
         tela.blit(personagem_redimensionado, posicao_personagem)
 
 
-        fonte_titulo = pygame.font.SysFont('freesansbold.ttf', 100)
+        fonte_titulo = pg.font.SysFont('freesansbold.ttf', 200)
         texto_titulo = fonte_titulo.render('O Caiçara', True, (255, 255, 255))
         posicao_titulo = ((tela.get_width() - texto_titulo.get_width()) // 2, 50)
         tela.blit(texto_titulo, posicao_titulo)
 
-        fonte_aperte_enter = pygame.font.SysFont('freesansbold.ttf', 36)
+        fonte_aperte_enter = pg.font.SysFont('freesansbold.ttf', 36)
         texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade! Aperte Enter para pular a intro.', True, (255, 255, 255))
         posicao_aperte_enter = ((tela.get_width() - texto_aperte_enter.get_width()) // 2, tela.get_height() - 50)
         tela.blit(texto_aperte_enter, posicao_aperte_enter)
-        pygame.time.wait(4)
-        pygame.display.flip()
+        pg.time.wait(4)
+        pg.display.flip()
         
         tela.blit(mapa, (0, 0))
 
 def desenhar_barra_tempo(tela, tempo_restante):
-    comprimento_total = 300  
+    comprimento_total = 700  
     cor_verde = (0, 255, 0)
     cor_vermelha = (255, 0, 0)
     largura_barra = int((tempo_restante / 10) * comprimento_total)
     cor = cor_verde if tempo_restante > 5 else cor_vermelha  
-    pygame.draw.rect(tela, cor, (400, 70, largura_barra, 30))
+    pg.draw.rect(tela, cor, (400, 575, largura_barra, 35))
 
 def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
     tela.blit(mapa, (0, 0))
-    relogio = pygame.time.Clock()
+    relogio = pg.time.Clock()
     relogio.tick(60)
-    fonte_titulo = pygame.font.SysFont(None, 120)
+    fonte_titulo = pg.font.SysFont(None, 120)
     texto_titulo = fonte_titulo.render("O CAIÇARA", True, (255, 255, 255))
 
     introducao(tela, mapa, texto_titulo)
 
-    pygame.display.flip()
-    pygame.time.wait(1000)
+    pg.display.flip()
+    pg.time.wait(1000)
     pontuacao = 60
 
     while True:
@@ -177,35 +175,37 @@ def loop_jogo_principal(tela, mapa):
             tela.fill((0, 0, 0))        
             tela.blit(mapa, (0, 0))
             tela.blit(chorao, (-100, 50))
+            desenhar_caixa_texto(tela, ' ')
             encontre = f'Encontre o bairro... {bairro_aleatorio}!'
-            desenhar_texto(tela, encontre, (400, 40), cor=(255, 255, 0))
+            desenhar_texto(tela, encontre, (400, 540), cor=(255, 255, 0))
             desenhar_barra_tempo(tela, contador)
-            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (400, 100))
-            pygame.display.flip()
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
+            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (400, 574))
+            pg.display.flip()
+            for evento in pg.event.get():
+                if evento.type == pg.QUIT:
+                    pg.quit()
                     sys.exit()
-                elif evento.type == pygame.MOUSEBUTTONDOWN:
-                    posicao_mouse = pygame.mouse.get_pos()
-                    pygame.draw.circle(tela, (255, 0, 0), posicao_mouse, 1)
-                    pygame.display.flip()
+                elif evento.type == pg.MOUSEBUTTONDOWN:
+                    posicao_mouse = pg.mouse.get_pos()
+                    pg.draw.circle(tela, (255, 0, 0), posicao_mouse, 1)
+                    pg.display.flip()
                     for bairro, dados in bairros.items():
                         posicao = dados['posicao']
                         min_x = min(pos[0] for pos in posicao)
                         min_y = min(pos[1] for pos in posicao)
                         max_x = max(pos[0] for pos in posicao)
                         max_y = max(pos[1] for pos in posicao)
-                        retangulo_bairro = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+                        retangulo_bairro = pg.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
                         if retangulo_bairro.collidepoint(posicao_mouse):
                             bairro_clicado = bairro
                             
                             if bairro == bairro_aleatorio:
-                                texto = f'Muito bem! Você clicou no bairro {bairro}!'                              
-                                desenhar_texto(tela, texto, (420, 120))
+                                texto = f'Muito bem! Você clicou no bairro {bairro}!' 
+                                posicao_texto = (400, 590)                             
+                                desenhar_texto(tela, texto, (posicao_texto))
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
-                                pygame.display.flip()
-                                pygame.time.wait(1500)                                
+                                pg.display.flip()
+                                pg.time.wait(1500)                                
                                 pontuacao += 10
                                 tela.blit(mapa, (0, 0))
                                 break
@@ -216,23 +216,23 @@ def loop_jogo_principal(tela, mapa):
                                                              (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2 * 450)
                                 pontuacao -= int(comprimento_seta / 10)
                                 texto = f'Você errou  por {comprimento_seta:.2f} metros do bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto, (400, 90))
+                                desenhar_texto(tela, texto, (400, 620))
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
                                 desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
-                                pygame.display.flip()
-                                pygame.time.wait(2500)
-                                tela.blit(mapa, (0, 0))
-                                pygame.display.flip()
+                                pg.display.flip()
+                                pg.time.wait(2500)
+                                tela.blit(mapa, (0, 0)) 
+                                pg.display.flip()
                                 break
             contador -= 0.01  
-            pygame.display.flip()
+            pg.display.flip()
 
 
 
             if contador <= 0 or pontuacao < 0:
                 game_over(tela)
                 if not game_over(tela):  
-                    pygame.quit()
+                    pg.quit()
                     sys.exit()
                 else:
                     loop_jogo_principal(tela, mapa)
