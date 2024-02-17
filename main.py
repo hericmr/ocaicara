@@ -2,6 +2,8 @@ import pygame
 import sys
 import random
 import math
+import pygame
+import sys
 
 def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
     fonte = pygame.font.SysFont('freesansbold.ttf', 50)
@@ -43,7 +45,9 @@ bairros = {
     'Marapé' : {'posicao' : [(733.35, 307.28), (685.07, 322.73), (703.42, 304.38), (705.35, 284.11), (689.90, 254.17), (690.86, 245.48), (743.97, 214.58), (743.97, 208.79), (775.84, 212.65), (741.08, 236.79)]},
     'Centro' : {'posicao' : [(864.67, 145.06), (849.22, 143.13), (845.36, 165.34), (844.39, 161.48), (844.39, 154.72), (842.46, 147.96), (827.98, 142.16), (825.08, 140.23), (812.53, 140.23), (792.25, 121.89), (804.80, 100.64), (815.43, 104.51), (867.57, 111.26)]},
     'Monte Serrat' : {'posicao' : [(825.08, 140.29), (841.50, 146.08), (844.39, 152.84), (843.43, 159.60), (845.36, 164.43), (842.46, 167.33), (831.84, 170.22), (811.56, 170.22), (796.11, 171.19), (799.98, 157.67), (803.84, 154.77), (812.53, 141.26)]},
-    'Chico de Paula' : {'posicao' : [(548.92, 226.17), (509.33, 219.41), (511.26, 211.69), (516.09, 206.86), (517.06, 201.06), (504.51, 193.34), (516.09, 180.79), (529.61, 187.55), (545.06, 177.89), (546.99, 163.41), (557.61, 171.13), (547.96, 195.27), (591.41, 234.86)]},
+    'Castelo' : {'posicao' : [(548.92, 226.17), (509.33, 219.41), (511.26, 211.69), (516.09, 206.86), (517.06, 201.06), (504.51, 193.34), (516.09, 180.79), (529.61, 187.55), (545.06, 177.89), (546.99, 163.41), (557.61, 171.13), (547.96, 195.27), (591.41, 234.86)]},
+    'Bom Retiro' : {'posicao' : [(575.96, 182.72), (524.78, 146.03), (526.71, 140.23), (515.13, 131.54), (531.54, 117.06), (527.68, 128.64), (539.27, 129.61), (549.89, 137.34), (578.86, 118.99), (602.03, 143.13)]},
+    'Rádio Clube' : {'posicao' : [(503.54, 192.37), (498.71, 181.75), (493.88, 181.75), (484.23, 182.72), (463.95, 164.37), (493.88, 135.40), (516.09, 129.61), (525.75, 139.27), (522.85, 144.09), (546.03, 160.51), (541.20, 178.86), (531.54, 187.55), (548.92, 197.20), (548.92, 224.24), (508.37, 218.45), (517.06, 204.93)]},
 }
 
 def calcular_ponto_central(posicoes):
@@ -143,11 +147,19 @@ def introducao(tela, mapa, texto_titulo):
         
         tela.blit(mapa, (0, 0))
 
+def desenhar_barra_tempo(tela, tempo_restante):
+    comprimento_total = 300  
+    cor_verde = (0, 255, 0)
+    cor_vermelha = (255, 0, 0)
+    largura_barra = int((tempo_restante / 10) * comprimento_total)
+    cor = cor_verde if tempo_restante > 5 else cor_vermelha  
+    pygame.draw.rect(tela, cor, (400, 70, largura_barra, 30))
+
 def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
     tela.blit(mapa, (0, 0))
     relogio = pygame.time.Clock()
-    contador = 60
+    relogio.tick(60)
     fonte_titulo = pygame.font.SysFont(None, 120)
     texto_titulo = fonte_titulo.render("O CAIÇARA", True, (255, 255, 255))
 
@@ -155,18 +167,23 @@ def loop_jogo_principal(tela, mapa):
 
     pygame.display.flip()
     pygame.time.wait(1000)
+    pontuacao = 60
 
     while True:
-        tela.blit(chorao, (-100, 50))
-        relogio.tick(120)
 
+        contador = 10
+        desenhar_barra_tempo(tela, contador)
         bairro_aleatorio = random.choice(lista_bairros) 
-        encontre = f'Encontre o bairro... {bairro_aleatorio}!'
-        desenhar_texto(tela, encontre, (400, 40), cor=(255, 255, 0))
-        desenhar_contador(tela, f"Pontos: {contador}", (1000, 10))
-
         bairro_clicado = None
         while bairro_clicado is None:
+            tela.fill((0, 0, 0))        
+            tela.blit(mapa, (0, 0))
+            tela.blit(chorao, (-100, 50))
+            encontre = f'Encontre o bairro... {bairro_aleatorio}!'
+            desenhar_texto(tela, encontre, (400, 40), cor=(255, 255, 0))
+            desenhar_barra_tempo(tela, contador)
+            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (400, 100))
+            pygame.display.flip()
             for evento in pygame.event.get():
                 if evento.type == pygame.QUIT:
                     pygame.quit()
@@ -186,43 +203,41 @@ def loop_jogo_principal(tela, mapa):
                             bairro_clicado = bairro
                             
                             if bairro == bairro_aleatorio:
-                                texto = f'Muito bem! Você clicou no bairro {bairro}!'
-                                desenhar_texto(tela, texto, (400, 90))
+                                texto = f'Muito bem! Você clicou no bairro {bairro}!'                              
+                                desenhar_texto(tela, texto, (420, 120))
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
                                 pygame.display.flip()
                                 pygame.time.wait(1500)                                
-                                contador += 10
-                                desenhar_contador(tela, f"Pontos: {contador}", (1000, 10))
+                                pontuacao += 10
                                 tela.blit(mapa, (0, 0))
                                 break
 
-        if bairro_clicado != bairro_aleatorio:
-            ponto_central_aleatorio = pontos_centrais[bairro_aleatorio]
-            comprimento_seta = math.sqrt((ponto_central_aleatorio[0] - posicao_mouse[0]) ** 2 +
-                                         (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2 * 450)
-
-            texto_comprimento_seta = f"Errou  por {comprimento_seta:.2f} metros."
-            desenhar_texto(tela, texto_comprimento_seta, (300, 400))
-            contador -= int(comprimento_seta / 8)
-
-            texto = f'Você clicou no bairro {bairro_clicado}, mas o bairro correto era {bairro_aleatorio}.'
-            desenhar_texto(tela, texto, (400, 90))
-            desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
-            desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
+                            else:
+                                ponto_central_aleatorio = pontos_centrais[bairro_aleatorio]
+                                comprimento_seta = math.sqrt((ponto_central_aleatorio[0] - posicao_mouse[0]) ** 2 +
+                                                             (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2 * 450)
+                                pontuacao -= int(comprimento_seta / 10)
+                                texto = f'Você errou  por {comprimento_seta:.2f} metros do bairro {bairro_aleatorio}.'
+                                desenhar_texto(tela, texto, (400, 90))
+                                desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
+                                desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
+                                pygame.display.flip()
+                                pygame.time.wait(2500)
+                                tela.blit(mapa, (0, 0))
+                                pygame.display.flip()
+                                break
+            contador -= 0.01  
             pygame.display.flip()
-            pygame.time.wait(2500)
-            tela.blit(mapa, (0, 0))
-            pygame.display.flip()
-                      
-        if contador <= 0:
-            if not game_over(tela):  
-                pygame.quit()
-                sys.exit()
-            else:
-                contador = 60
-                tela.blit(mapa, (0, 0))
-                pygame.display.flip()
-                pygame.time.wait(2000)
+
+
+
+            if contador <= 0 or pontuacao < 0:
+                game_over(tela)
+                if not game_over(tela):  
+                    pygame.quit()
+                    sys.exit()
+                else:
+                    loop_jogo_principal(tela, mapa)
 
 def main():
     mapa = carregar_mapa()
