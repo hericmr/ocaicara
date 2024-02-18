@@ -12,7 +12,7 @@ def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
 def desenhar_caixa_texto(tela, texto):
     cor_fundo = (0, 64, 0)
     cor_borda = (0, 0, 0)
-    retangulo = pg.Rect(0, tela.get_height() - 190, tela.get_width(), 190)
+    retangulo = pg.Rect(0, tela.get_height() - 180, tela.get_width(), 180)
     pg.draw.rect(tela, cor_fundo, retangulo)
     pg.draw.rect(tela, cor_borda, retangulo, 3)
     
@@ -137,9 +137,10 @@ def introducao(tela, mapa, texto_titulo):
         tela.blit(texto_titulo, posicao_titulo)
 
         fonte_aperte_enter = pg.font.SysFont('freesansbold.ttf', 36)
-        texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade! Aperte Enter para pular a intro.', True, (255, 255, 255))
+        texto_aperte_enter = fonte_aperte_enter.render('Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade! Aperte Enter para pular a intro.', True, (0, 255, 0))
         posicao_aperte_enter = ((tela.get_width() - texto_aperte_enter.get_width()) // 2, tela.get_height() - 50)
         tela.blit(texto_aperte_enter, posicao_aperte_enter)
+        desenhar_caixa_texto(tela, ' ')
         pg.time.wait(4)
         pg.display.flip()
         
@@ -151,7 +152,7 @@ def desenhar_barra_tempo(tela, tempo_restante):
     cor_vermelha = (255, 0, 0)
     largura_barra = int((tempo_restante / 10) * comprimento_total)
     cor = cor_verde if tempo_restante > 5 else cor_vermelha  
-    pg.draw.rect(tela, cor, (400, 575, largura_barra, 35))
+    pg.draw.rect(tela, cor, (300, 575, largura_barra, 35))
 
 def loop_jogo_principal(tela, mapa):
     lista_bairros = list(bairros.keys())
@@ -165,7 +166,7 @@ def loop_jogo_principal(tela, mapa):
 
     pg.display.flip()
     pg.time.wait(1000)
-    pontuacao = 60
+    pontuacao = 70
 
     while True:
 
@@ -179,9 +180,9 @@ def loop_jogo_principal(tela, mapa):
             tela.blit(chorao, (-100, 50))
             desenhar_caixa_texto(tela, ' ')
             encontre = f'Encontre o bairro... {bairro_aleatorio}!'
-            desenhar_texto(tela, encontre, (400, 540), cor=(255, 255, 0))
+            desenhar_texto(tela, encontre, (300, 510), cor=(255, 255, 0))
             desenhar_barra_tempo(tela, contador)
-            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (400, 574))
+            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (300, 574))
             pg.display.flip()
             for evento in pg.event.get():
                 if evento.type == pg.QUIT:
@@ -203,7 +204,7 @@ def loop_jogo_principal(tela, mapa):
                             
                             if bairro == bairro_aleatorio:
                                 texto = f'Muito bem! Você clicou no bairro {bairro}!' 
-                                posicao_texto = (400, 590)                             
+                                posicao_texto = (300, 620)                             
                                 desenhar_texto(tela, texto, (posicao_texto))
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
                                 pg.display.flip()
@@ -218,7 +219,7 @@ def loop_jogo_principal(tela, mapa):
                                                              (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2 * 450)
                                 pontuacao -= int(comprimento_seta / 10)
                                 texto = f'Você errou  por {comprimento_seta:.2f} metros do bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto, (400, 620))
+                                desenhar_texto(tela, texto, (300, 620))
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
                                 desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
                                 pg.display.flip()
