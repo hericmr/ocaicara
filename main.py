@@ -203,7 +203,7 @@ def loop_jogo_principal(tela, mapa):
                             bairro_clicado = bairro
                             
                             if bairro == bairro_aleatorio:
-                                texto = f'Muito bem! Você clicou no bairro {bairro}!' 
+                                texto = f'Você clicou no bairro {bairro} em {10-contador} segundos' 
                                 posicao_texto = (300, 620)                             
                                 desenhar_texto(tela, texto, (posicao_texto))
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
