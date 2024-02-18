@@ -246,13 +246,26 @@ def loop_jogo_principal(tela, mapa):
                             ponto_central_aleatorio = pontos_centrais[bairro_aleatorio]
                             comprimento_seta = math.sqrt((ponto_central_aleatorio[0] - posicao_mouse[0]) ** 2 +
                                                              (ponto_central_aleatorio[1] - posicao_mouse[1]) ** 2 * 450)
+                            if bairro_clicado == bairro_aleatorio:
+                                pontuacao += 20
+                                desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro]['posicao'])
+                                pg.time.wait(1000)
+                                texto = f'Muito bem! Você clicou no bairro {bairro} em {(10-contador):2f} segundos.'
+                                posicao_texto = (300, 620)                             
+                                desenhar_texto(tela, texto, (posicao_texto))
+                                desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
+                                pg.display.flip()
+                                pg.time.wait(1500)                                
+                                pontuacao += 10
+                                tela.blit(mapa, (0, 0))
+                                break
+
                             if comprimento_seta < 500:
                                 pontuacao += int(comprimento_seta)
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro]['posicao'])
                                 pg.time.wait(1000)
-                                texto = f'Muito bem, vc clicou no bairro {bairro} em {(10-contador):2f} segundos.'
-                                desenhar_texto(tela, texto, (300, 620))
-                                desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
+                                texto = f'Você clicou a {comprimento_seta:.2f} metros de distancia, do bairro {bairro_aleatorio} em {(10-contador):2f} segundos.'
+                                desenhar_texto(tela, texto, (10, 620))
                                 pg.display.flip()
                                 pg.time.wait(2500)
                                 tela.blit(mapa, (0, 0))
@@ -263,7 +276,7 @@ def loop_jogo_principal(tela, mapa):
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
                                 pg.time.wait(1000)
                                 texto = f'Você clicou a {comprimento_seta:.2f} metros de distância do bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto, (300, 620))
+                                desenhar_texto(tela, texto, (10, 620))
                                 desenhar_seta(tela, posicao_mouse, ponto_central_aleatorio)
                                 pg.display.flip()
                                 pg.time.wait(2500)
