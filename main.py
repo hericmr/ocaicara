@@ -4,7 +4,7 @@ import pygame as pg
 import sys
 
 def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
-    fonte = pg.font.SysFont('freesansbold.ttf', 36)
+    fonte = pg.font.SysFont('freesansbold.ttf', 50)
     superficie_texto = fonte.render(texto, True, cor) 
     tela.blit(superficie_texto, posicao)
     pg.display.flip()
@@ -12,18 +12,18 @@ def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
 def desenhar_texto_centralizado(tela, texto, cor=(255, 255, 255)):
     fonte = pg.font.SysFont('freesansbold.ttf', 80)
     superficie_texto = fonte.render(texto, True, cor) 
-    tela.blit(superficie_texto, ((tela.get_width() - superficie_texto.get_width()) // 2, tela.get_height() - superficie_texto.get_height() - 50))
+    tela.blit(superficie_texto, ((tela.get_width() - superficie_texto.get_width()) // 2, tela.get_height() - superficie_texto.get_height() - 110))
     pg.display.flip()
 
 def desenhar_caixa_texto(tela, texto):
-    cor_fundo = (0, 64, 0)
+    cor_fundo = (0, 34, 0)
     cor_borda = (0, 0, 0)
     retangulo = pg.Rect(0, tela.get_height() - 180, tela.get_width(), 180)
     pg.draw.rect(tela, cor_fundo, retangulo)
     pg.draw.rect(tela, cor_borda, retangulo, 3)
     
 def desenhar_contador(tela, texto, posicao):
-    fonte = pg.font.Font('freesansbold.ttf', 36)
+    fonte = pg.font.Font('freesansbold.ttf', 16)
     superficie_texto = fonte.render(texto, 5, (0, 0, 0)) 
     tela.blit(superficie_texto, posicao)
     
@@ -100,6 +100,7 @@ chorao = pg.image.load('chorao.png')
 bandeira = pg.image.load('bandeira2.png')
 cor_verde = (0, 255, 0)
 cor_vermelha = (255, 0, 0)
+cor_verde_musgo = (0, 128, 0)
 
 def carregar_mapa():
     mapa = pg.image.load("map.png")
@@ -138,9 +139,10 @@ def inicializar_jogo():
     tela = pg.display.set_mode((largura_tela, altura_tela))
     return tela
 
+
 def desenhar_pontuacao(tela, pontuação):
     fonte_pontuacao = pg.font.SysFont('freesansbold.ttf', 26)
-    texto_pontuacao = fonte_pontuacao.render(f'Pontuação: {pontuação}', True, (255, 255, 255))
+    texto_pontuacao = fonte_pontuacao.render(f'Pontuação: {int(pontuação)}', True, (255, 255, 255))
     tela.blit(texto_pontuacao, (10, 10))
 
 
@@ -185,7 +187,7 @@ def introducao(tela, mapa, texto_titulo):
         tela.blit(texto_botao_sair, posicao_botao_sair)
 
         texto = f'Ajude o Chorão a fazer seu corre. Encontre os bairros da cidade!'
-        desenhar_texto(tela, texto, (20, 510))
+        desenhar_texto(tela, texto, (100, 510))
 
         pg.display.flip()
         pg.time.wait(4)
@@ -218,10 +220,10 @@ def introducao(tela, mapa, texto_titulo):
 def desenhar_barra_tempo(tela, tempo_restante):
     comprimento_total = 1319  
     largura_barra = int((tempo_restante / 10) * comprimento_total)
-    cor = cor_verde if tempo_restante > 5 else cor_vermelha  
+    cor = cor_verde_musgo if tempo_restante > 5 else cor_vermelha  
     cor2 = (0, 0, 128)
-    pg.draw.rect(tela, cor2, (0, 502, comprimento_total, 35))    
-    pg.draw.rect(tela, cor, (0, 502, largura_barra, 35))
+    pg.draw.rect(tela, cor2, (0, 502, comprimento_total, 75))    
+    pg.draw.rect(tela, cor, (0, 502, largura_barra, 75))
 
 
 def calcular_pontuacao(comprimento_seta, tempo_decorrido):
@@ -250,7 +252,7 @@ def loop_jogo_principal(tela, mapa):
 
         contador = 10
         desenhar_barra_tempo(tela, contador)
-        bairro_aleatorio = random.choice(lista_bairros) 
+        bairro_aleatorio = random.choice(lista_bairros)
         bairro_clicado = None
         while bairro_clicado is None:
             tela.fill((0, 0, 0))        
@@ -258,8 +260,8 @@ def loop_jogo_principal(tela, mapa):
             tela.blit(chorao, (-100, 50))
             desenhar_caixa_texto(tela, ' ')
             desenhar_barra_tempo(tela, contador)
-            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (20, 502))
-            encontre = f'Encontre o bairro... {bairro_aleatorio}!'
+            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (10, 522))
+            encontre = f'{bairro_aleatorio}!'
             desenhar_texto_centralizado(tela, encontre)
             desenhar_pontuacao(tela, pontuação)
             pg.display.flip()
@@ -298,9 +300,10 @@ def loop_jogo_principal(tela, mapa):
                                 pontuação += 20
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro]['posicao'])
                                 pg.time.wait(1000)
-                                texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de {metros:.2f} metros do bairro {bairro_aleatorio}.'
-                                posicao_texto = (10, 620)
-                                desenhar_texto(tela, texto, (posicao_texto))
+                                texto = f'Em apenas {tempo_decorrido:.2f} segundos você conseguiu clicar'
+                                desenhar_texto(tela, texto, (250, 590))
+                                texto2 = f'no bairro {bairro_aleatorio}.'
+                                desenhar_texto(tela, texto2, (350, 635))
                                 desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
                                 tela.blit(bandeira, posicao_bandeira)
                                 pg.display.flip()
@@ -310,8 +313,10 @@ def loop_jogo_principal(tela, mapa):
                             else:
                                 desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
                                 pg.time.wait(1000)
-                                texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de {metros:.2f} metros do bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto, (10, 620))
+                                texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de'
+                                desenhar_texto(tela, texto, (250, 590))
+                                texto2 = f'{metros:.2f} metros do bairro {bairro_aleatorio}.'
+                                desenhar_texto(tela, texto2, (350, 635))
                                 desenhar_seta(tela, posicao_mouse, ponto_central)
                                 tela.blit(bandeira, posicao_bandeira)
                                 pg.display.flip()
@@ -333,14 +338,6 @@ def loop_jogo_principal(tela, mapa):
 
 
 def main():
-
-    #nao consegui mudar o cursor ainda
-    # cursor = pg.image.load('cursor.png')
-    # largura_cursor = cursor.get_width()
-    # altura_cursor = cursor.get_height()
-    # ponto_quente_cursor = (largura_cursor // 2, altura_cursor // 2)
-    # pixels_cursor = pg.image.tostring(cursor, 'RGBA', True)
-    # pg.mouse.set_cursor(largura_cursor, altura_cursor, ponto_quente_cursor[0], ponto_quente_cursor[1], pixels_cursor)
 
     mapa = carregar_mapa()
     tela = inicializar_jogo()
