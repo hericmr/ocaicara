@@ -1,32 +1,28 @@
-import random
-import math
-import pygame as pg
-import sys
+import random, math, sys, pygame as pg, asyncio
 
-def desenhar_texto(tela, texto, posicao, cor=(255, 255, 255)):
-    fonte = pg.font.SysFont('freesansbold.ttf', 50)
-    superficie_texto = fonte.render(texto, True, cor) 
+def desenhar_texto(tela, texto, posicao, tamanho=50, cor=(255, 255, 255)):
+    fonte = pg.font.SysFont('freesansbold.ttf', tamanho)
+    superficie_texto = fonte.render(texto, True, cor)
     tela.blit(superficie_texto, posicao)
-    pg.display.flip()
 
-def desenhar_texto_centralizado(tela, texto, cor=(255, 255, 255)):
-    fonte = pg.font.SysFont('freesansbold.ttf', 80)
-    superficie_texto = fonte.render(texto, True, cor) 
-    tela.blit(superficie_texto, ((tela.get_width() - superficie_texto.get_width()) // 2, tela.get_height() - superficie_texto.get_height() - 110))
-    pg.display.flip()
 
-def desenhar_caixa_texto(tela, texto):
-    cor_fundo = (0, 34, 0)
-    cor_borda = (0, 0, 0)
-    retangulo = pg.Rect(0, tela.get_height() - 180, tela.get_width(), 180)
+def desenhar_texto_centralizado(tela, texto, tamanho=80, cor=(255, 255, 255)):
+    fonte = pg.font.SysFont('freesansbold.ttf', tamanho)
+    superficie_texto = fonte.render(texto, True, cor)
+    tela.blit(superficie_texto, ((tela.get_width() - superficie_texto.get_width()) // 2, (tela.get_height() - superficie_texto.get_height()) // 2))
+
+def desenhar_caixa_texto(tela, texto, altura=180, cor_fundo=(0, 34, 0), cor_borda=(0, 0, 0), cor_texto=(255, 255, 255)):
+    retangulo = pg.Rect(0, tela.get_height() - altura, tela.get_width(), altura)
     pg.draw.rect(tela, cor_fundo, retangulo)
     pg.draw.rect(tela, cor_borda, retangulo, 3)
+    desenhar_texto_centralizado(tela, texto, tamanho=24, cor=cor_texto) 
     
-def desenhar_contador(tela, texto, posicao):
-    fonte = pg.font.Font('freesansbold.ttf', 16)
-    superficie_texto = fonte.render(texto, 5, (0, 0, 0)) 
+def desenhar_contador(tela, texto, posicao, tamanho=16, cor=(0, 0, 0)):
+    fonte = pg.font.SysFont('freesansbold.ttf', tamanho)
+    superficie_texto = fonte.render(texto, True, cor)
     tela.blit(superficie_texto, posicao)
-    
+
+        
 bairros = {
     'Monte Serrat' : {'posicao' : [(825.08, 140.29), (841.50, 146.08), (844.39, 152.84), (843.43, 159.60), (845.36, 164.43), (842.46, 167.33), (831.84, 170.22), (811.56, 170.22), (796.11, 171.19), (799.98, 157.67), (803.84, 154.77), (812.53, 141.26)]},
     'Embaré' : {'posicao': [(863.24, 378.24), (873.21, 362.04), (876.94, 328.40), (883.17, 330.89), (888.16, 327.15), (881.93, 318.43), (884.42, 315.94), (879.44, 308.46), (893.14, 293.51), (955.44, 338.37), (924.29, 367.02), (898.12, 401.91)]},
@@ -67,14 +63,12 @@ bairros = {
     'Chinês' : {'posicao' : [(789.73, 122.81), (774.78, 115.33), (773.53, 115.33), (773.53, 109.10), (767.30, 107.86), (767.30, 107.86), (767.30, 102.87), (793.47, 116.58), (793.47, 116.58), (790.97, 124.05)]},
 }
 
-def desenhar_bairro(tela, posicao, pontos):
-    poligono_bairro = pg.Surface((max(pontos, key=lambda x: x[0])[0] - min(pontos, key=lambda x: x[0])[0],
-                                  max(pontos, key=lambda x: x[1])[1] - min(pontos, key=lambda x: x[1])[1]), 
-                                  pg.SRCALPHA)
-    cor_transparente = (0, 255, 0, 180)
-    pg.draw.polygon(poligono_bairro, cor_transparente, [(pos[0] - min(pontos, key=lambda x: x[0])[0],
-                                                        pos[1] - min(pontos, key=lambda x: x[1])[1]) for pos in pontos])
-    tela.blit(poligono_bairro, (min(pontos, key=lambda x: x[0])[0], min(pontos, key=lambda x: x[1])[1]))
+def desenhar_bairro(tela, pontos, cor_transparente=(0, 255, 0, 180)):
+    min_x, min_y = min(pontos, key=lambda x: x[0])[0], min(pontos, key=lambda x: x[1])[1]
+    max_x, max_y = max(pontos, key=lambda x: x[0])[0], max(pontos, key=lambda x: x[1])[1]
+    poligono_bairro = pg.Surface((max_x - min_x, max_y - min_y), pg.SRCALPHA)
+    pg.draw.polygon(poligono_bairro, cor_transparente, [(pos[0] - min_x, pos[1] - min_y) for pos in pontos])
+    tela.blit(poligono_bairro, (min_x, min_y))
 
 def calcular_ponto_central(posicoes):
     soma_x = sum(pos[0] for pos in posicoes)
@@ -88,16 +82,16 @@ for bairro, dados in bairros.items():
     ponto_central = calcular_ponto_central(posicoes)
     pontos_centrais[bairro] = ponto_central
 
-def desenhar_seta(tela, posicao_inicial, posicao_final):
+def desenhar_seta(tela, posicao_inicial, posicao_final, cor=(255, 0, 0), largura=3):
     angulo = math.atan2(posicao_final[1] - posicao_inicial[1], posicao_final[0] - posicao_inicial[0])
     comprimento = 10
-    pg.draw.line(tela, (255, 0, 0), posicao_inicial, posicao_final, 3)
-    ponta1 = (posicao_final[0] - comprimento * math.cos(angulo - math.pi / 6),
-              posicao_final[1] - comprimento * math.sin(angulo - math.pi / 6))
-    ponta2 = (posicao_final[0] - comprimento * math.cos(angulo + math.pi / 6),
-              posicao_final[1] - comprimento * math.sin(angulo + math.pi / 6))
-    pg.draw.line(tela, (255, 0, 0), posicao_final, ponta1, 3)
-    pg.draw.line(tela, (255, 0, 0), posicao_final, ponta2, 3)
+    pg.draw.line(tela, cor, posicao_inicial, posicao_final, largura)
+    for ang in [math.pi / 6, -math.pi / 6]:
+        x = posicao_final[0] - comprimento * math.cos(angulo + ang)
+        y = posicao_final[1] - comprimento * math.sin(angulo + ang)
+        pg.draw.line(tela, cor, posicao_final, (x, y), largura)
+
+
 chorao = pg.image.load('chorao.png')
 bandeira = pg.image.load('bandeira2.png')
 cor_verde = (0, 255, 0)
@@ -108,7 +102,7 @@ def carregar_mapa():
     mapa = pg.image.load("map.png")
     return mapa
 
-def game_over(tela):
+async def game_over(tela):
     desenhar_caixa_texto(tela, ' ')
 
     fonte_aperte_s = pg.font.SysFont('freesansbold.ttf', 36)
@@ -143,52 +137,65 @@ def desenhar_pontuacao(tela, pontuação):
     tela.blit(texto_pontuacao, (10, 10))
 
 
-def introducao(tela, mapa, texto_titulo):
+async def introducao(tela, mapa, texto_titulo):
     iniciar_jogo = False
     sair = False
     i = 0
+    try:
+        while not iniciar_jogo and not sair:
+            for evento in pg.event.get():
+                if evento.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif evento.type == pg.MOUSEBUTTONDOWN:
+                    posicao_mouse = pg.mouse.get_pos()
+                    if 200 <= posicao_mouse[0] <= 400 and 550 <= posicao_mouse[1] <= 650:
+                        iniciar_jogo = True
+                        print("Iniciar jogo clicado")
+                    elif 600 <= posicao_mouse[0] <= 800 and 550 <= posicao_mouse[1] <= 650:  
+                        sair = True
+                        print("Sair clicado")
+            tela.blit(mapa, (0, 0))
+            tamanho_personagem = int(i / 1)
+            posicao_personagem = (100 + i * 2, 50 + i * 0.6)
+            personagem_redimensionado = pg.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
+            tela.blit(personagem_redimensionado, posicao_personagem)
+            tela.blit(texto_titulo, ((tela.get_width() - texto_titulo.get_width()) // 2, 50))
+            desenhar_caixa_texto(tela, ' ')
+            pg.draw.rect(tela, (cor_verde_musgo), (200, 550, 200, 100))  #
+            pg.draw.rect(tela, (255, 0, 0), (600, 550, 200, 100))  
+            fonte_botao = pg.font.SysFont('freesansbold.ttf', 50)
+            texto_botao_iniciar = fonte_botao.render('Iniciar Jogo', True, (0, 0, 0))
+            texto_botao_sair = fonte_botao.render('Sair', True, (255, 255, 255))
+            posicao_botao_iniciar = (230, 575)
+            posicao_botao_sair = (630, 575)
+            tela.blit(texto_botao_iniciar, posicao_botao_iniciar)
+            tela.blit(texto_botao_sair, posicao_botao_sair)
+            texto = f'Aprenda a geografia. Encontre os bairros de Santos!'
+            desenhar_texto(tela, texto, (120, 510))
+            pg.display.flip()
+            await asyncio.sleep(1)
+            tela.blit(texto_titulo, ((tela.get_width() - texto_titulo.get_width()) // 2, 50))
+            i += 1
+            if i >= 500:
+                i = 0
+        if sair:
+            pg.quit()
+            sys.exit()
+        return iniciar_jogo
+    except Exception as e:
+        print(f"Erro na função introdução: {e}")
+        pg.quit()
+        sys.exit()
 
-    while not iniciar_jogo and not sair:
-        for evento in pg.event.get():
-            if evento.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
-            elif evento.type == pg.MOUSEBUTTONDOWN:
-                posicao_mouse = pg.mouse.get_pos()
-                if 200 <= posicao_mouse[0] <= 400 and 550 <= posicao_mouse[1] <= 650:
-                    iniciar_jogo = True
-                elif 600 <= posicao_mouse[0] <= 1200 and 550 <= posicao_mouse[1] <= 650:  
-                    sair = True
+def desenhar_barra_tempo(tela, tempo_restante):
+    comprimento_total = 1319  
+    largura_barra = int((tempo_restante / 10) * comprimento_total)
+    cor = cor_verde_musgo if tempo_restante > 5 else cor_vermelha  
+    cor2 = (0, 0, 0)
+    pg.draw.rect(tela, cor2, (0, 502, comprimento_total, 77))    
+    pg.draw.rect(tela, cor, (0, 502, largura_barra, 75))
 
-        tela.blit(mapa, (0, 0))
-
-        tamanho_personagem = int(i / 1)
-        posicao_personagem = (100 + i * 2, 50 + i * 0.6)
-        personagem_redimensionado = pg.transform.scale(chorao, (tamanho_personagem, tamanho_personagem))
-        tela.blit(personagem_redimensionado, posicao_personagem)
-
-        tela.blit(texto_titulo, ((tela.get_width() - texto_titulo.get_width()) // 2, 50))
-
-        desenhar_caixa_texto(tela, ' ')
-        pg.draw.rect(tela, (cor_verde_musgo), (540, 550, 250, 100))
-        fonte_botao = pg.font.SysFont('freesansbold.ttf', 50)
-        texto_botao = fonte_botao.render('Iniciar Jogo', True, (0, 0, 0))
-        posicao_botao = (570, 575)
-        tela.blit(texto_botao, posicao_botao) 
-
-        texto = f'Aprenda a geografia de Santos. Encontre os bairros da cidade!'
-        desenhar_texto(tela, texto, (85, 510))
-
-        pg.display.flip()
-        pg.time.wait(4)
-
-        tela.blit(texto_titulo, ((tela.get_width() - texto_titulo.get_width()) // 2, 50))
-        i += 1
-
-        if i >= 500:
-            i = 0
-
-    return iniciar_jogo
 
 def desenhar_barra_tempo(tela, tempo_restante):
     comprimento_total = 1319  
@@ -200,6 +207,7 @@ def desenhar_barra_tempo(tela, tempo_restante):
 
 
 def calcular_pontuacao(comprimento_seta, tempo_decorrido):
+
     if comprimento_seta > 80:
         pontuacao = - (1/comprimento_seta) * (tempo_decorrido / 30)
     else:
@@ -207,128 +215,59 @@ def calcular_pontuacao(comprimento_seta, tempo_decorrido):
     return pontuacao
 
 
-def parabens(tela):
-    pg.mixer.music.stop()  
-    for i in range(20):  
+async def parabens(tela, duracao=3, texto="Parabéns!", cor_texto=(255, 255, 255)):
+    pg.mixer.music.stop()
+    for _ in range(20): 
         tela.fill((0, 0, 0)) 
-        desenhar_texto_centralizado(tela, "Parabéns!", cor=(255, 255, 255))
+        desenhar_texto_centralizado(tela, texto, cor=cor_texto)
         pg.display.flip()
-        pg.time.wait(3000)
+        await asyncio.sleep(duracao / 20)  
+    pg.mixer.music.play(-1)
 
-    pg.mixer.music.play(-1)  
-
-def loop_jogo_principal(tela, mapa):
+async def loop_jogo_principal(tela, mapa):
+    print("Iniciando a função do jogo principal...")
     lista_bairros = list(bairros.keys())
     tela.blit(mapa, (0, 0))
     relogio = pg.time.Clock()
-    relogio.tick(60)
-    fonte_titulo = pg.font.SysFont(None, 120)
-    texto_titulo = fonte_titulo.render("O CAIÇARA", True, (255, 255, 255))
-
-    introducao(tela, mapa, texto_titulo)
-
-    pg.display.flip()
-    pg.time.wait(1000)
     pontuação = 0
 
+    contador = 10  
+
     while True:
-
-        contador = 10
+        relogio.tick(30) 
+        tela.blit(mapa, (0, 0))  
         desenhar_barra_tempo(tela, contador)
-        bairro_aleatorio = random.choice(lista_bairros)
-        bairro_clicado = None
-        while bairro_clicado is None:      
-            tela.blit(mapa, (0, 0))
-            tela.blit(chorao, (-100, 50))
-            desenhar_caixa_texto(tela, ' ')
-            desenhar_barra_tempo(tela, contador)
-            desenhar_contador(tela, f"Tempo restante: {contador:.2f}", (10, 522))
-            encontre = f'{bairro_aleatorio}!'
-            desenhar_texto_centralizado(tela, encontre)
-            desenhar_pontuacao(tela, pontuação)
-            
-            pg.display.flip()
-            for evento in pg.event.get():
-                if evento.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-                elif evento.type == pg.MOUSEBUTTONDOWN:
-                    posicao_mouse = pg.mouse.get_pos()
-                    posicao_bandeira = (posicao_mouse[0] - 27, posicao_mouse[1] - 52) 
-                    tela.blit(bandeira, posicao_bandeira)
-                    tempo_decorrido = (10 - contador)
-                    pg.display.flip()
-                    pg.time.wait(1000)
+        desenhar_pontuacao(tela, pontuação)
 
-                    for bairro, dados in bairros.items():
-                        posicao = dados['posicao']
-                        ponto_central = pontos_centrais[bairro_aleatorio]
-                        distancia_centro = math.sqrt((ponto_central[0] - posicao_mouse[0]) ** 2 + (ponto_central[1] - posicao_mouse[1]) ** 2) 
-                        metros = distancia_centro * 22
-                        if distancia_centro > 10:
-                            pontuação += calcular_pontuacao(distancia_centro, tempo_decorrido)
-                            pontuação = max(pontuação, -10)
-                        else:
-                            pontuação -= calcular_pontuacao(distancia_centro, tempo_decorrido)
-
-                        min_x = min(pos[0] for pos in posicao)
-                        min_y = min(pos[1] for pos in posicao)
-                        max_x = max(pos[0] for pos in posicao)
-                        max_y = max(pos[1] for pos in posicao)
-                        retangulo_bairro = pg.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
-                        if retangulo_bairro.collidepoint(posicao_mouse):
-                            bairro_clicado = bairro
-
-                            if bairro_clicado == bairro_aleatorio:
-                                pontuação += 20
-                                desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro]['posicao'])
-                                pg.time.wait(1000)
-                                texto = f'Em apenas {tempo_decorrido:.2f} segundos você conseguiu clicar'
-                                desenhar_texto(tela, texto, (250, 590))
-                                texto2 = f'no bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto2, (450, 635))
-                                desenhar_bairro(tela, (0, 0), bairros[bairro]['posicao'])
-                                tela.blit(bandeira, posicao_bandeira)
-                                pg.display.flip()
-                                pg.time.wait(2000)
-                                tela.blit(mapa, (0, 0))
-                                break
-                            else:
-                                desenhar_bairro(tela, retangulo_bairro.topleft, bairros[bairro_aleatorio]['posicao'])
-                                pg.time.wait(1000)
-                                texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de'
-                                desenhar_texto(tela, texto, (250, 590))
-                                texto2 = f'{metros:.2f} metros do bairro {bairro_aleatorio}.'
-                                desenhar_texto(tela, texto2, (350, 635))
-                                desenhar_seta(tela, posicao_mouse, ponto_central)
-                                tela.blit(bandeira, posicao_bandeira)
-                                pg.display.flip()
-                                pg.time.wait(2000)
-                                tela.blit(mapa, (0, 0))
-                                pg.display.flip()
-                                break
-            contador -= 0.01  
-            pg.display.flip()
-
-            if contador <= 0 or pontuação < -10:
-                game_over(tela)
-
-                if not game_over(tela):
-                    pg.quit()
-                    sys.exit()
-                else:
-                    loop_jogo_principal(tela, mapa) 
-            
-            if pontuação >= 150:
-                parabens(tela)
+        for evento in pg.event.get():
+            if evento.type == pg.QUIT:
                 pg.quit()
+                sys.exit()
+            elif evento.type == pg.MOUSEBUTTONDOWN:
+                await tratar_clique_mouse(evento, tela, lista_bairros, contador, pontuação)
+        
+        pg.display.flip()  
+        contador -= 0.01 
 
-def main():
+        if contador <= 0 or pontuação < -10:
+            if not await game_over(tela): 
+                pg.quit()
+                sys.exit()
+            else:
+                contador = 10  
+                pontuação = 0 
 
-    mapa = carregar_mapa()
+async def main():
     tela = inicializar_jogo()
-    loop_jogo_principal(tela, mapa)
-
+    mapa = carregar_mapa()
+    texto_titulo = pg.font.SysFont(None, 120).render("O CAIÇARA", True, (255, 255, 255))
+    
+    iniciar_jogo = await introducao(tela, mapa, texto_titulo)
+    
+    if iniciar_jogo:
+        await loop_jogo_principal(tela, mapa)
+    else:
+        pg.quit()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
