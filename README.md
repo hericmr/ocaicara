@@ -7,7 +7,7 @@ Este é um jogo inspirado no Traveler IQ Chalenge, desenvolvido em Python e Pyga
 
 ## Visão Geral
 
-Explore o charme de Santos enquanto ajuda o nosso Marginal Alado a fazer seu corre. Encontre as biqueiras e os diferentes bairros da cidade, testando não apenas sua malandragem, mas também seu conhecimento geográfico. Prepare-se para uma aventura emocionante, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
+Explore o charme de Santos enquanto ajuda o nosso Marginal Alado a encontrar os diferentes bairros da cidade, testando seu conhecimento geográfico. Prepare-se para uma aventura, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
 
 ## Requisitos
 
