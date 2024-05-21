@@ -3,7 +3,7 @@
 
 [Assista ao vídeo da gameplay](https://youtu.be/MtoaXkZIpLQ))
 
-Este é um jogo inspirado no Traveler IQ Chalenge, desenvolvido em Python e Pygame onde o objetivo é encontrar bairros na cidade de Santos, São Paulo.
+Este é um jogo desenvolvido em Python e Pygame onde o objetivo é encontrar bairros na cidade de Santos, São Paulo.
 
 ## Visão Geral
 
