@@ -353,20 +353,20 @@ class Jogo:
                 contador -= 0.01
                 pg.display.flip()
 
-                if contador <= 0 or self.pontuacao <= -1000:
+                if contador <= 0 or self.pontuacao <= -100:
                     if not self.game_over():
                         pg.quit()
                         sys.exit()
                     else:
-                        self.pontuacao = 0  # Reset pontuação
+                        self.pontuacao = 0  
                         self.loop_jogo_principal()
-                        return  # Saia da função para reiniciar corretamente
+                        return  
 
                 if self.pontuacao >= 1500000:
                     if self.parabens():
-                        self.pontuacao = 0  # Reset pontuação
+                        self.pontuacao = 0 
                         self.loop_jogo_principal()
-                        return  # Saia da função para reiniciar corretamente
+                        return  
 
 def main():
     jogo = Jogo()
