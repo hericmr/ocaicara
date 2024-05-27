@@ -9,6 +9,8 @@ Este é um jogo desenvolvido em Python e Pygame onde o objetivo é encontrar bai
 
 Explore o charme de Santos enquanto ajuda o nosso Marginal Alado a encontrar os diferentes bairros da cidade, testando seu conhecimento geográfico. Prepare-se para uma aventura, onde sua sagacidade e astúcia serão postas à prova nos becos e vielas da cidade.
 
+"O Caiçara" é uma ferramenta educativa que ajuda os jogadores a aprenderem sobre a geografia urbana de Santos, São Paulo. O jogo ensina a localização, tamanho e formato dos bairros, promovendo um aprendizado ativo, visual e envolvente. Além disso, incentiva habilidades como atenção aos detalhes, memória espacial e raciocínio rápido, enquanto os jogadores se divertem encontrando os bairros corretos dentro do tempo limite.
+
 ## Requisitos
 
 Para executar este jogo, certifique-se de ter Python e Pygame instalados em seu ambiente. Você pode instalar os requisitos executando o seguinte comando:
