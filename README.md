@@ -24,7 +24,7 @@ Para embarcar nesta aventura, certifique-se de ter Python e Pygame instalados. E
 pip install -r requirements.txt
 ```
 
-## Como Jogar
+## 🎮 Como Jogar
 
 1. **Clone este repositório:**
 
