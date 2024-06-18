@@ -18,11 +18,8 @@
 
 ## 💻 Requisitos
 
-Para embarcar nesta aventura, certifique-se de ter Python e Pygame instalados. Execute o comando abaixo para instalar tudo o que precisa:
+Para embarcar nesta aventura, certifique-se de ter Python e Pygame instalados.
 
-```
-pip install -r requirements.txt
-```
 
 ## 🎮 Como Jogar
 
