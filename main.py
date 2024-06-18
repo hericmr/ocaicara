@@ -37,8 +37,61 @@ class Bairro:
         tela.blit(poligono_bairro, (min(self.posicoes, key=lambda x: x[0])[0], min(self.posicoes, key=lambda x: x[1])[1]))
 
 class Interface:
-    def __init__(self, tela):
+    def __init__(self, tela, personagem):
         self.tela = tela
+        self.personagem = personagem
+
+    def desenhar_texto(self, texto, posicao, cor=(255, 255, 255), tamanho=50):
+        fonte = pg.font.SysFont('freesansbold.ttf', tamanho)
+        superficie_texto = fonte.render(texto, True, cor)
+        self.tela.blit(superficie_texto, posicao)
+        pg.display.flip()
+
+    def desenhar_caixa_texto(self):
+        cor_fundo = (0, 34, 0)
+        cor_borda = (0, 0, 0)
+        retangulo = pg.Rect(0, self.tela.get_height() - 180, self.tela.get_width(), 180)
+        pg.draw.rect(self.tela, cor_fundo, retangulo)
+        pg.draw.rect(self.tela, cor_borda, retangulo, 3)
+
+    def desenhar_barra_tempo(self, tempo_restante, comprimento_total=1319):
+        largura_barra = int((tempo_restante / 10) * comprimento_total)
+        cor = (0, 128, 0) if tempo_restante > 5 else (255, 0, 0)
+        cor2 = (0, 0, 0)
+        pg.draw.rect(self.tela, cor2, (0, 502, comprimento_total, 77))
+        pg.draw.rect(self.tela, cor, (0, 502, largura_barra, 75))
+
+
+    def animar_seta(self, posicao_inicial, posicao_final, duracao=1000):
+        tempo_inicial = pg.time.get_ticks()
+        while pg.time.get_ticks() - tempo_inicial < duracao:
+            tempo_decorrido = pg.time.get_ticks() - tempo_inicial
+            progressao = tempo_decorrido / duracao
+            posicao_atual = (posicao_inicial[0] + (posicao_final[0] - posicao_inicial[0]) * progressao,
+                             posicao_inicial[1] + (posicao_final[1] - posicao_inicial[1]) * progressao)
+            self.tela.blit(self.tela, (0, 0))
+            self.desenhar_seta(posicao_inicial, posicao_atual)
+            pg.display.flip()
+            pg.time.wait(10)
+
+    def desenhar_seta(self, posicao_inicial, posicao_final):
+        angulo = math.atan2(posicao_final[1] - posicao_inicial[1], posicao_final[0] - posicao_inicial[0])
+        comprimento = 15  
+        espessura = 2  
+        cor = (255, 0, 0)  
+        pg.draw.line(self.tela, cor, posicao_inicial, posicao_final, espessura)
+
+        ponta1 = (posicao_final[0] - comprimento * math.cos(angulo - math.pi / 6),
+                  posicao_final[1] - comprimento * math.sin(angulo - math.pi / 6))
+        ponta2 = (posicao_final[0] - comprimento * math.cos(angulo + math.pi / 6),
+                  posicao_final[1] - comprimento * math.sin(angulo + math.pi / 6))
+
+        pg.draw.line(self.tela, cor, posicao_final, ponta1, espessura)
+        pg.draw.line(self.tela, cor, posicao_final, ponta2, espessura)
+
+    def __init__(self, tela, personagem):
+        self.tela = tela
+        self.personagem = personagem
 
     def desenhar_texto(self, texto, posicao, cor=(255, 255, 255), tamanho=50):
         fonte = pg.font.SysFont('freesansbold.ttf', tamanho)
@@ -85,15 +138,16 @@ class Jogo:
         self.largura_tela = 1319
         self.altura_tela = 680
         self.tela = pg.display.set_mode((self.largura_tela, self.altura_tela))
-        self.interface = Interface(self.tela)
+        self.chorao = Personagem('chorao.png', (-200, 50), (700, 700))
+        self.interface = Interface(self.tela, self.chorao)
         self.audio = Audio()
         self.audio.carregar_musica_de_fundo('musica.ogg')
         self.bairros = self.carregar_bairros()
         self.pontos_centrais = self.calcular_pontos_centrais()
-        self.chorao = Personagem('chorao.png', (-100, 50), (100, 100))
         self.bandeira = pg.image.load('bandeira2.png')
         self.mapa = self.carregar_mapa()
         self.pontuacao = 0
+        self.distanciamento_acumulado = 0 
 
     def carregar_bairros(self):
         return {
@@ -135,7 +189,18 @@ class Jogo:
     'Porto Paqueta' : {'posicao' : [(839.57, 109.10), (840.81, 106.61), (869.47, 109.10), (913.08, 124.05), (914.32, 135.27), (904.35, 143.99), (904.35, 126.55), (868.22, 111.59), (832.09, 107.86), (832.09, 109.10), (832.09, 110.35)]},
     'Chinês' : {'posicao' : [(789.73, 122.81), (774.78, 115.33), (773.53, 115.33), (773.53, 109.10), (767.30, 107.86), (767.30, 107.86), (767.30, 102.87), (793.47, 116.58), (793.47, 116.58), (790.97, 124.05)]},
 }
-    
+    def animar_bairro(self, bairro):
+        duracao = 500  
+        tempo_inicial = pg.time.get_ticks()
+        
+        while pg.time.get_ticks() - tempo_inicial < duracao:
+            tempo_decorrido = pg.time.get_ticks() - tempo_inicial
+            progressao = tempo_decorrido / duracao
+            cor_opaca = (0, 255, 0, int(180 * progressao))
+            self.tela.blit(self.mapa, (0, 0)) 
+            bairro.desenhar(self.tela, cor=cor_opaca)
+            pg.display.flip()
+            pg.time.wait(10)
 
     def carregar_mapa(self):
         return pg.image.load("map.png")
@@ -162,7 +227,7 @@ class Jogo:
 
     def desenhar_seta(self, posicao_inicial, posicao_final):
         angulo = math.atan2(posicao_final[1] - posicao_inicial[1], posicao_final[0] - posicao_inicial[0])
-        comprimento = 10
+        comprimento = 5
         pg.draw.line(self.tela, (255, 0, 0), posicao_inicial, posicao_final, 3)
         ponta1 = (posicao_final[0] - comprimento * math.cos(angulo - math.pi / 6),
                   posicao_final[1] - comprimento * math.sin(angulo - math.pi / 6))
@@ -177,10 +242,10 @@ class Jogo:
         self.tela.blit(texto_pontuacao, (10, 10))
 
     def calcular_pontuacao(self, comprimento_seta, tempo_decorrido):
-        if comprimento_seta > 70:
-            pontuacao = - (comprimento_seta) * (tempo_decorrido / 30)
+        if comprimento_seta > 50:
+            pontuacao = - (comprimento_seta * 2) * (tempo_decorrido / 40)
         else:
-            pontuacao = (comprimento_seta) * (20 / tempo_decorrido)
+            pontuacao = (comprimento_seta) * (10 / tempo_decorrido)
         return pontuacao
 
     def game_over(self):
@@ -201,13 +266,47 @@ class Jogo:
 
     def parabens(self):
         pg.mixer.music.stop()
-        for i in range(20):
-            self.tela.fill((0, 0, 0))
+
+        while True:
+            for evento in pg.event.get():
+                if evento.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif evento.type == pg.KEYDOWN and evento.key == pg.K_RETURN:
+                    pg.mixer.music.play(-1)
+                    return True 
+
+            cor_fundo = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            self.tela.fill(cor_fundo)
+
             self.interface.desenhar_texto("Parabéns!", ((self.tela.get_width() - 200) // 2, (self.tela.get_height() - 100) // 2), cor=(255, 255, 255), tamanho=80)
+
+            tamanho_personagem = (random.randint(50, 150), random.randint(50, 150))
+            posicao_personagem = (random.randint(0, self.largura_tela - tamanho_personagem[0]), random.randint(0, self.altura_tela - tamanho_personagem[1]))
+            personagem_redimensionado = pg.transform.scale(self.chorao.imagem, tamanho_personagem)
+            self.tela.blit(personagem_redimensionado, posicao_personagem)
+
             pg.display.flip()
-            pg.time.wait(1000)
-        pg.mixer.music.play(-1)
-        return True  # Continue o jogo
+            pg.time.wait(300)
+
+            pg.mixer.music.stop()
+            for i in range(999):
+                cor_fundo = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                self.tela.fill(cor_fundo)
+                
+                self.interface.desenhar_texto("Parabéns!", ((self.tela.get_width() - 200) // 2, (self.tela.get_height() - 100) // 2), cor=(255, 255, 255), tamanho=80)
+                
+                tamanho_personagem = (random.randint(50, 150), random.randint(50, 150))
+                posicao_personagem = (random.randint(0, self.largura_tela - tamanho_personagem[0]), random.randint(0, self.altura_tela - tamanho_personagem[1]))
+                personagem_redimensionado = pg.transform.scale(self.chorao.imagem, tamanho_personagem)
+                self.tela.blit(personagem_redimensionado, posicao_personagem)
+                
+                pg.display.flip()
+                pg.time.wait(100)
+            
+            pg.mixer.music.play(-1)
+            return True
+
 
     def introducao(self, texto_titulo):
         iniciar_jogo = False
@@ -277,12 +376,11 @@ class Jogo:
 
             while bairro_clicado is None:
                 self.tela.blit(self.mapa, (0, 0))
-                self.chorao.desenhar(self.tela)
                 self.interface.desenhar_caixa_texto()
                 self.interface.desenhar_barra_tempo(contador)
                 self.desenhar_contador(f"Tempo restante: {contador:.2f}", (10, 522))
                 encontre = f'{bairro_aleatorio}!'
-                self.interface.desenhar_texto(encontre, ((self.tela.get_width() - 200) // 2, self.tela.get_height() - 150), tamanho=80)
+                self.interface.desenhar_texto(f"{encontre}", ((self.tela.get_width() - pg.font.SysFont('freesansbold.ttf', 90).size(f"{encontre}")[0]) // 2, self.tela.get_height() - 155), tamanho=90)
                 self.desenhar_pontuacao()
 
                 pg.display.flip()
@@ -298,75 +396,76 @@ class Jogo:
                         pg.display.flip()
                         pg.time.wait(1000)
 
+                        ponto_central = self.pontos_centrais[bairro_aleatorio]
+                        distancia_centro = math.sqrt((ponto_central[0] - posicao_mouse[0]) ** 2 + (ponto_central[1] - posicao_mouse[1]) ** 2)
+                        metros = distancia_centro * 22
+
+                        bairro_clicado = None
                         for bairro, dados in self.bairros.items():
                             posicao = dados['posicao']
-                            ponto_central = self.pontos_centrais[bairro_aleatorio]
-                            distancia_centro = math.sqrt((ponto_central[0] - posicao_mouse[0]) ** 2 + (ponto_central[1] - posicao_mouse[1]) ** 2)
-                            metros = distancia_centro * 22
-
-                            if distancia_centro > 10:
-                                self.pontuacao += self.calcular_pontuacao(distancia_centro, tempo_decorrido)
-                                self.pontuacao = max(self.pontuacao, -10)
-                            else:
-                                self.pontuacao -= self.calcular_pontuacao(distancia_centro, tempo_decorrido)
-
                             min_x = min(pos[0] for pos in posicao)
                             min_y = min(pos[1] for pos in posicao)
                             max_x = max(pos[0] for pos in posicao)
                             max_y = max(pos[1] for pos in posicao)
                             retangulo_bairro = pg.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
-
                             if retangulo_bairro.collidepoint(posicao_mouse):
                                 bairro_clicado = bairro
+                                break
 
-                                if bairro_clicado == bairro_aleatorio:
-                                    self.pontuacao += 20
-                                    bairro_objeto = Bairro(bairro, self.bairros[bairro]['posicao'])
-                                    bairro_objeto.desenhar(self.tela)
-                                    pg.time.wait(1000)
-                                    texto = f'Em apenas {tempo_decorrido:.2f} segundos você conseguiu clicar'
-                                    self.interface.desenhar_texto(texto, (250, 590))
-                                    texto2 = f'no bairro {bairro_aleatorio}.'
-                                    self.interface.desenhar_texto(texto2, (450, 635))
-                                    bairro_objeto.desenhar(self.tela)
-                                    self.tela.blit(self.bandeira, posicao_bandeira)
-                                    pg.display.flip()
-                                    pg.time.wait(2000)
-                                    self.tela.blit(self.mapa, (0, 0))
-                                    break
-                                else:
-                                    bairro_objeto = Bairro(bairro_aleatorio, self.bairros[bairro_aleatorio]['posicao'])
-                                    bairro_objeto.desenhar(self.tela)
-                                    pg.time.wait(1000)
-                                    texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de'
-                                    self.interface.desenhar_texto(texto, (250, 590))
-                                    texto2 = f'{metros:.2f} metros do bairro {bairro_aleatorio}.'
-                                    self.interface.desenhar_texto(texto2, (350, 635))
-                                    self.desenhar_seta(posicao_mouse, ponto_central)
-                                    self.tela.blit(self.bandeira, posicao_bandeira)
-                                    pg.display.flip()
-                                    pg.time.wait(2000)
-                                    self.tela.blit(self.mapa, (0, 0))
-                                    pg.display.flip()
-                                    break
+                        if bairro_clicado == bairro_aleatorio:
+                            self.pontuacao += 10  
+                            self.pontuacao += self.calcular_pontuacao(distancia_centro, tempo_decorrido)
+                            bairro_objeto = Bairro(bairro, self.bairros[bairro]['posicao'])
+                            self.animar_bairro(bairro_objeto) 
+                            self.chorao.desenhar(self.tela)
+                            pg.time.wait(1000)
+                            texto = f'Boa!! Em apenas {tempo_decorrido:.2f} segundos você conseguiu clicar'
+                            self.interface.desenhar_texto(texto, (250, 590))
+                            texto2 = f'no bairro {bairro_aleatorio}.'
+                            self.interface.desenhar_texto(texto2, (450, 635))
+                            bairro_objeto.desenhar(self.tela)
+                            self.tela.blit(self.bandeira, posicao_bandeira)
+                            pg.display.flip()
+                            pg.time.wait(2000)
+
+
+                        else:
+                            self.pontuacao += self.calcular_pontuacao(distancia_centro, tempo_decorrido)
+                            self.pontuacao = max(self.pontuacao, -1500000)
+                            self.distanciamento_acumulado += metros
+
+                            bairro_objeto = Bairro(bairro_aleatorio, self.bairros[bairro_aleatorio]['posicao'])
+                            bairro_objeto.desenhar(self.tela)
+                            pg.time.wait(1000)
+                            texto = f'Em {tempo_decorrido:.2f} segundos, você clicou a uma distância de'
+                            self.interface.desenhar_texto(texto, (250, 590))
+                            texto2 = f'{metros:.2f} metros do bairro {bairro_aleatorio}.'
+                            self.interface.desenhar_texto(texto2, (350, 635))
+                            self.interface.animar_seta(posicao_mouse, ponto_central)
+                            self.tela.blit(self.bandeira, posicao_bandeira)
+                            pg.display.flip()
+                            pg.time.wait(2000)
+                            pg.display.flip()
 
                 contador -= 0.01
                 pg.display.flip()
 
-                if contador <= 0 or self.pontuacao <= -100:
+                if contador <= 0 or self.pontuacao <= -200 or self.distanciamento_acumulado > 10000:
                     if not self.game_over():
                         pg.quit()
                         sys.exit()
                     else:
                         self.pontuacao = 0  
+                        self.distanciamento_acumulado = 0
                         self.loop_jogo_principal()
                         return  
 
-                if self.pontuacao >= 1500000:
+                if self.pontuacao >= 200:
                     if self.parabens():
                         self.pontuacao = 0 
+                        self.distanciamento_acumulado = 0
                         self.loop_jogo_principal()
-                        return  
+                        return
 
 def main():
     jogo = Jogo()
