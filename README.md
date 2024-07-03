@@ -12,7 +12,7 @@
 
 🌆 **Exploração Urbana:** Cada beco, rua e viela são um desafio à sua sagacidade. Mergulhe de cabeça na atmosfera única de Santos!  
 🗺️ **Aprendizado Ativo:** Aprenda de forma ativa, visual e envolvente sobre a localização, tamanho e formato dos bairros.  
-⏱️ **Se vira nos trinta:** Corra contra o tempo para encontrar os bairros corretos e garantir a diversão Quanto mais rápido você for mais pontos ganhará  |.
+⏱️ **Se vira nos trinta:** Corra contra o tempo para encontrar os bairros corretos e garantir a diversão Quanto mais rápido você for mais pontos ganhará.
 
 ---
 
