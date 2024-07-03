@@ -6,7 +6,7 @@
 
 ---
 
-## .  Visão Geral
+## Visão Geral
 
 **Prepare-se para embarcar em uma jornada eletrizante pelas ruas de Santos, São Paulo!** "O Caiçara" te coloca na pele do destemido Chorão, o **Marginal Alado**. Seu objetivo é descobrir os bairros desta icônica cidade litorânea, testando ao máximo seu conhecimento geográfico.
 
