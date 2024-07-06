@@ -27,6 +27,26 @@ class Jogo:
         self.pontuacao = 0
         self.distanciamento_acumulado = 0 
 
+    def animar_movimento_chorao(self, posicao_final, duracao):
+        posicao_inicial = (-self.chorao.imagem.get_width(), posicao_final[1])
+        tempo_inicial = pg.time.get_ticks()
+        while pg.time.get_ticks() - tempo_inicial < duracao:
+            tempo_decorrido = pg.time.get_ticks() - tempo_inicial
+            progressao = tempo_decorrido / duracao
+
+            posicao_atual = (
+                posicao_inicial[0] + (posicao_final[0] - posicao_inicial[0]) * progressao,
+                posicao_inicial[1]  
+            )
+
+            tamanho_atual = max(1, int(self.chorao.imagem.get_width() * (1 - progressao)))  
+            personagem_redimensionado = pg.transform.scale(self.chorao.imagem, (tamanho_atual, tamanho_atual))
+
+            self.tela.blit(self.mapa, (0, 0))  
+            self.interface.desenhar_caixa_texto()
+            self.tela.blit(personagem_redimensionado, posicao_atual)  
+            pg.display.flip()  
+            pg.time.wait(10)  
 
     def carregar_bairros(self):
         return bairros
@@ -93,7 +113,7 @@ class Jogo:
     def game_over(self):
         self.interface.desenhar_caixa_texto()
         fonte_aperte_s = pg.font.SysFont('freesansbold.ttf', 36)
-        texto_aperte_s = fonte_aperte_s.render('Quer jogar de novo? S/N', True, (255, 255, 255))
+        texto_aperte_s = fonte_aperte_s.render('Você perdeu. Quer jogar de novo? S/N', True, (255, 255, 255))
         posicao_aperte_s = ((self.tela.get_width() - texto_aperte_s.get_width()) // 2, self.tela.get_height() - 50)
         self.tela.blit(texto_aperte_s, posicao_aperte_s)
         pg.display.flip()
@@ -102,9 +122,9 @@ class Jogo:
             for evento in pg.event.get():
                 if evento.type == pg.KEYDOWN:
                     if evento.key == pg.K_s:
-                        return True  # Continue o jogo
+                        return True  
                     elif evento.key == pg.K_n:
-                        return False  # Termine o jogo
+                        return False  
 
     def parabens(self):
         pg.mixer.music.stop()
@@ -222,7 +242,7 @@ class Jogo:
                 self.interface.desenhar_barra_tempo(contador)
                 self.desenhar_contador(f"Tempo restante: {contador:.2f}", (10, 522))
                 encontre = f'{bairro_aleatorio}!'
-                self.interface.desenhar_texto(f"{encontre}", ((self.tela.get_width() - pg.font.SysFont('freesansbold.ttf', 90).size(f"{encontre}")[0]) // 2, self.tela.get_height() - 155), tamanho=90)
+                self.interface.desenhar_texto(f"{encontre}", ((self.tela.get_width() - pg.font.SysFont('freesansbold.ttf', 90).size(f"{encontre}")[0]) // 2, self.tela.get_height() - 170), tamanho=90)
                 self.desenhar_pontuacao()
 
                 pg.display.flip()
@@ -255,22 +275,20 @@ class Jogo:
                                 break
 
                         if bairro_clicado == bairro_aleatorio:
+                            self.interface.desenhar_caixa_texto()
                             self.pontuacao += 10  
                             self.pontuacao += self.calcular_pontuacao(distancia_centro, tempo_decorrido)
                             bairro_objeto = Bairro(bairro, self.bairros[bairro]['posicao'])
                             self.animar_bairro(bairro_objeto) 
-                            self.chorao.desenhar(self.tela)
-                            pg.time.wait(1000)
+                            self.animar_movimento_chorao(self.pontos_centrais[bairro_aleatorio], 1000)
                             texto = f'Boa!! Em apenas {tempo_decorrido:.2f} segundos você conseguiu clicar'
-                            self.interface.desenhar_texto(texto, (250, 590))
+                            self.interface.desenhar_texto(texto, (250, 545))
                             texto2 = f'no bairro {bairro_aleatorio}.'
-                            self.interface.desenhar_texto(texto2, (450, 635))
+                            self.interface.desenhar_texto(texto2, (450, 590))
                             bairro_objeto.desenhar(self.tela)
                             self.tela.blit(self.bandeira, posicao_bandeira)
                             pg.display.flip()
                             pg.time.wait(2000)
-                            
-
 
                         else:
                             self.pontuacao += self.calcular_pontuacao(distancia_centro, tempo_decorrido)
