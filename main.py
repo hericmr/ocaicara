@@ -269,6 +269,7 @@ class Jogo:
                             self.tela.blit(self.bandeira, posicao_bandeira)
                             pg.display.flip()
                             pg.time.wait(2000)
+                            
 
 
                         else:
@@ -287,7 +288,7 @@ class Jogo:
                             self.tela.blit(self.bandeira, posicao_bandeira)
                             pg.display.flip()
                             pg.time.wait(2000)
-                            pg.display.flip()
+
 
                 contador -= 0.01
                 pg.display.flip()
@@ -302,7 +303,7 @@ class Jogo:
                         self.loop_jogo_principal()
                         return  
 
-                if self.pontuacao >= 200:
+                if self.pontuacao >= 5000:
                     if self.parabens():
                         self.pontuacao = 0 
                         self.distanciamento_acumulado = 0
