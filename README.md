@@ -8,16 +8,16 @@
 
 ## Visão Geral
 
-**Prepare-se para embarcar em uma jornada eletrizante pelas ruas de Santos, São Paulo!** "O Caiçara" te coloca na pele do destemido Chorão, o **Marginal Alado**. Seu objetivo é descobrir os bairros desta icônica cidade litorânea, testando ao máximo seu conhecimento geográfico.
+**Embarque em uma jornada eletrizante pelas ruas de Santos, São Paulo!** "O Caiçara" te coloca na pele do destemido Chorão, o nosso querido **Marginal Alado**. Seu objetivo é descobrir os bairros desta icônica cidade litorânea, testando ao máximo seu conhecimento geográfico.
 
 🗺️ **Aprendizado Ativo:** Aprenda de forma ativa, visual e envolvente sobre a localização, tamanho e formato dos bairros.  
-⏱️ **Se vira nos trinta:** Corra contra o tempo para encontrar os bairros corretos e garantir a diversão Quanto mais rápido você for mais pontos ganhará.
+⏱️ **Se vira nos trinta:** Corra contra o tempo para encontrar os bairros corretos! Quanto mais rápido você for mais pontos ganhará para fechar o jogo.
 
 ---
 
 ## 💻 Requisitos
 
-Para embarcar nesta aventura, você só precisa de ter o Python e a biblioteca Pygame instalados.
+Para jogar, você só precisa de ter o Python e a biblioteca Pygame instalados.
 
 
 ## 🎮 Como Jogar
