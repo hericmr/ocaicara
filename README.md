@@ -2,7 +2,7 @@
 
 ![O Caiçara](https://github.com/hericmr/ocaicara/blob/main/recursos/screenplay.png?raw=true)
 
-[🎥 Assista ao vídeo da gameplay](https://youtu.be/MtoaXkZIpLQ)
+[🎥 Assista ao vídeo da gameplay]([https://youtu.be/MtoaXkZIpLQ](https://youtu.be/h3Fl3T7MukY))
 
 ---
 
