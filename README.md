@@ -4,7 +4,8 @@
 
 ![O Caiçara 0.2 ](https://github.com/hericmr/ocaicara/blob/main/recursos/tela.png?raw=true)
 
-[🎥 Assista ao vídeo da gameplay]([https://youtu.be/MtoaXkZIpLQ](https://youtu.be/h3Fl3T7MukY))
+[🎥 Assista ao vídeo da gameplay]
+([https://youtu.be/MtoaXkZIpLQ](https://youtu.be/h3Fl3T7MukY))
 
 ---
 
