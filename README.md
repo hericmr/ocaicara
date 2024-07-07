@@ -1,6 +1,8 @@
 # 🕹️ O Caiçara - Aprenda os Bairros de Santos 🎮
 
-![O Caiçara](https://github.com/hericmr/ocaicara/blob/main/recursos/screenplay.png?raw=true)
+![O Caiçara 0.1 ](https://github.com/hericmr/ocaicara/blob/main/recursos/screenplay.png?raw=true)
+
+![O Caiçara 0.2 ](https://github.com/hericmr/ocaicara/blob/main/recursos/tela.png?raw=true)
 
 [🎥 Assista ao vídeo da gameplay]([https://youtu.be/MtoaXkZIpLQ](https://youtu.be/h3Fl3T7MukY))
 
