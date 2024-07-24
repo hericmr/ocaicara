@@ -13,8 +13,8 @@ class Jogo:
     def __init__(self):
         pg.init()
         pg.display.set_caption("O CAIÇARA")
-        self.largura_tela = 1319
-        self.altura_tela = 680
+        self.largura_tela = 900
+        self.altura_tela = 800
         self.tela = pg.display.set_mode((self.largura_tela, self.altura_tela))
         self.chorao = Personagem('recursos/chorao.png', (-200, 50), (700, 700))
         self.interface = Interface(self.tela, self.chorao)
@@ -26,6 +26,7 @@ class Jogo:
         self.mapa = self.carregar_mapa()
         self.pontuacao = 0
         self.distanciamento_acumulado = 0 
+        self.mapa = self.carregar_mapa()  # Adicionei a inicialização do mapa aqui
 
     def animar_movimento_chorao(self, posicao_final, duracao):
         posicao_inicial = (-self.chorao.imagem.get_width(), posicao_final[1])
@@ -168,6 +169,10 @@ class Jogo:
             
             pg.mixer.music.play(-1)
             return True
+    def desenhar_silhuetas_bairros(self):
+        for bairro_nome, dados in self.bairros.items():
+            posicoes = dados['posicao']
+            pg.draw.polygon(self.tela, (0, 0, 0), posicoes, 2)  # Desenha a silhueta em preto com espessura de 2
 
 
     def introducao(self, texto_titulo):
@@ -219,7 +224,8 @@ class Jogo:
 
     def loop_jogo_principal(self):
         lista_bairros = list(self.bairros.keys())
-        self.tela.blit(self.mapa, (0, 0))
+        self.tela.fill((0, 0, 0))  # Preenche a tela com branco
+        self.desenhar_silhuetas_bairros()  # Desenha a silhueta dos bairros
         relogio = pg.time.Clock()
         relogio.tick(60)
         fonte_titulo = pg.font.SysFont(None, 120)
@@ -237,7 +243,8 @@ class Jogo:
             bairro_clicado = None
 
             while bairro_clicado is None:
-                self.tela.blit(self.mapa, (0, 0))
+                self.tela.fill((255, 255, 255))  # Preenche a tela com branco
+                self.desenhar_silhuetas_bairros()  # Desenha a silhueta dos bairros
                 self.interface.desenhar_caixa_texto()
                 self.interface.desenhar_barra_tempo(contador)
                 self.desenhar_contador(f"Tempo restante: {contador:.2f}", (10, 522))
@@ -306,7 +313,6 @@ class Jogo:
                             self.tela.blit(self.bandeira, posicao_bandeira)
                             pg.display.flip()
                             pg.time.wait(2000)
-
 
                 contador -= 0.01
                 pg.display.flip()
